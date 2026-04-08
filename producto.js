@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const pillSub    = document.getElementById("pillSub");
   const descCard   = document.getElementById("productDescCard");
   const descEl     = document.getElementById("productDesc");
+  const galleryEl  = document.getElementById("productGallery");
 
   // Leer el ID de la URL (?id=123)
   const params = new URLSearchParams(window.location.search);
@@ -53,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cat         = product.cat         || "";
   const sub         = product.sub         || "";
   const description = product.description || "";
+  const gallery     = product.gallery     || "";
 
   // Título de la pestaña
   document.title = `${name} • AGUSTINA`;
@@ -76,6 +78,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (description && descCard && descEl) {
     descEl.textContent = description;
     descCard.hidden = false;
+  }
+
+  // Galería
+  if (gallery && galleryEl) {
+    const urls = [image, ...gallery.split(",").map(u => u.trim()).filter(Boolean)];
+    if (urls.length > 1) {
+      galleryEl.hidden = false;
+      galleryEl.innerHTML = urls.map((url, i) => `
+        <img class="product__thumb ${i === 0 ? 'is-active' : ''}"
+             src="${url}" alt="foto ${i + 1}" />
+      `).join("");
+
+      galleryEl.querySelectorAll(".product__thumb").forEach(thumb => {
+        thumb.addEventListener("click", () => {
+          img.src = thumb.src;
+          galleryEl.querySelectorAll(".product__thumb").forEach(t => t.classList.remove("is-active"));
+          thumb.classList.add("is-active");
+        });
+      });
+    }
   }
 
   // WhatsApp

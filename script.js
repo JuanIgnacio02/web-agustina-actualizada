@@ -138,36 +138,29 @@ if (chipGroup) {
       const isNew = p.created_at
         ? (Date.now() - new Date(p.created_at).getTime()) < 14 * 24 * 60 * 60 * 1000
         : false;
+      const catLabel = (p.cat || "").replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
       return `
       <article class="card product-link"
-      data-id="${p.id}"
-      data-name="${p.name}"
-      data-image="${p.image}"
-      data-price="${p.price}"
-      data-cat="${p.cat}"
-      data-sub="${p.sub}"
-      data-description="${(p.description || "").replace(/"/g, '&quot;')}">
+        data-id="${p.id}"
+        data-name="${p.name}"
+        data-image="${p.image}"
+        data-price="${p.price}"
+        data-cat="${p.cat}"
+        data-sub="${p.sub}"
+        data-description="${(p.description || "").replace(/"/g, '&quot;')}">
 
-  <div class="card__media">
-    ${isNew ? '<span class="card__badge">NUEVO</span>' : ''}
-    <img src="${p.image}" class="card__img" alt="${p.name}">
-  </div>
+        <div class="card__media">
+          ${isNew ? '<span class="card__badge">NUEVO</span>' : ''}
+          <img src="${p.image}" class="card__img" alt="${p.name}">
+        </div>
 
-  <div class="card__info">
-    <h3 class="card__title">${p.name}</h3>
+        <div class="card__info">
+          ${catLabel ? `<span class="card__cat">${catLabel}</span>` : ''}
+          <h3 class="card__title">${p.name}</h3>
+          <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
+        </div>
 
-    <div class="card__bottom">
-      <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
-
-      <a class="card__cta"
-         href="https://wa.me/5492604002520?text=Hola!%20Quiero%20consultar%20por%20${encodeURIComponent(p.name)}"
-         target="_blank">
-         Consultar
-      </a>
-    </div>
-  </div>
-
-</article>`;
+      </article>`;
     }).join("");
 
     observeCards();

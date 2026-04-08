@@ -319,7 +319,7 @@
       </div>
 
       <div class="form-group">
-        <label>Imagen (opcional — dejá vacío para no cambiarla)</label>
+        <label>Imagen principal (opcional — dejá vacío para no cambiarla)</label>
         <input type="file" id="edit-img-file" accept="image/*" style="display:none" />
         <div class="img-row">
           <div class="upload-zone" id="edit-upload-zone" onclick="document.getElementById('edit-img-file').click()">
@@ -327,6 +327,15 @@
           </div>
           <img id="edit-img-preview" class="img-preview" src="" alt="preview" />
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Fotos adicionales <span style="color:#bbb;font-weight:400">(galería — opcional)</span></label>
+        <input type="file" id="edit-gallery-files" accept="image/*" multiple style="display:none" />
+        <div class="upload-zone" id="edit-gallery-zone" onclick="document.getElementById('edit-gallery-files').click()">
+          🖼️ Subir más fotos
+        </div>
+        <div id="edit-gallery-preview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"></div>
       </div>
     </div>
 
@@ -406,6 +415,15 @@
           </div>
 
           <div class="form-group full">
+            <label>Fotos adicionales <span style="color:#bbb;font-weight:400">(galería — opcional)</span></label>
+            <input type="file" id="f-gallery-files" accept="image/*" multiple style="display:none" />
+            <div class="upload-zone" id="gallery-zone" onclick="document.getElementById('f-gallery-files').click()">
+              🖼️ Subir más fotos (podés elegir varias a la vez)
+            </div>
+            <small style="color:#aaa;font-size:12px;margin-top:4px">Se muestran como miniaturas en la página del producto.</small>
+          </div>
+
+          <div class="form-group full">
             <label>Imagen del producto *</label>
             <input type="file" id="f-img-file" accept="image/*" style="display:none" />
             <div class="img-row">
@@ -449,10 +467,17 @@
 
   // ---- INPUT IMAGEN ----
   let selectedFile = null;
+  let selectedGalleryFiles = [];
 
   document.getElementById("f-img-file").addEventListener("change", function() {
     selectedFile = this.files[0];
     previewImg(this);
+  });
+
+  document.getElementById("f-gallery-files").addEventListener("change", function() {
+    selectedGalleryFiles = Array.from(this.files);
+    const zone = document.getElementById("gallery-zone");
+    zone.textContent = `✓ ${selectedGalleryFiles.length} foto(s) seleccionada(s)`;
   });
 
   function doLogin() {
@@ -527,6 +552,12 @@
     try {
       const imageUrl = await uploadImage(selectedFile);
 
+      let galleryValue = "";
+      if (selectedGalleryFiles.length > 0) {
+        const galleryUrls = await Promise.all(selectedGalleryFiles.map(f => uploadImage(f)));
+        galleryValue = galleryUrls.join(",");
+      }
+
       const res = await fetch(`${SUPABASE_URL}/functions/v1/guardar-producto`, {
         method: "POST",
         headers: {
@@ -534,7 +565,7 @@
           "Authorization": `Bearer ${SUPABASE_KEY}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name, price, image_url: imageUrl, cat, sub, description: desc })
+        body: JSON.stringify({ name, price, image_url: imageUrl, cat, sub, description: desc, gallery: galleryValue })
       });
 
       if (!res.ok) throw new Error("Error al guardar en base de datos");
@@ -552,6 +583,7 @@
 
   // ---- MODAL EDITAR ----
   let editSelectedFile = null;
+  let editGalleryFiles = [];
 
   document.getElementById("edit-img-file").addEventListener("change", function () {
     editSelectedFile = this.files[0];
@@ -561,13 +593,25 @@
     document.getElementById("edit-upload-zone").textContent = "✓ " + editSelectedFile.name;
   });
 
+  document.getElementById("edit-gallery-files").addEventListener("change", function () {
+    editGalleryFiles = Array.from(this.files);
+    document.getElementById("edit-gallery-zone").textContent = `✓ ${editGalleryFiles.length} foto(s) seleccionada(s)`;
+    const previewBox = document.getElementById("edit-gallery-preview");
+    previewBox.innerHTML = editGalleryFiles.map(f =>
+      `<img src="${URL.createObjectURL(f)}" style="width:52px;height:52px;object-fit:cover;border-radius:8px;" />`
+    ).join("");
+  });
+
   function openEditModal(p) {
     editSelectedFile = null;
+    editGalleryFiles = [];
     document.getElementById("edit-id").value = p.id;
     document.getElementById("edit-name").value = p.name || "";
     document.getElementById("edit-price").value = p.price || "";
     document.getElementById("edit-desc").value = p.description || "";
     document.getElementById("edit-upload-zone").textContent = "📷 Hacé click para cambiar la foto";
+    document.getElementById("edit-gallery-zone").textContent = "🖼️ Subir más fotos";
+    document.getElementById("edit-gallery-preview").innerHTML = "";
     const preview = document.getElementById("edit-img-preview");
     preview.src = p.image_url || "";
     preview.style.display = p.image_url ? "block" : "none";
@@ -600,6 +644,11 @@
 
       if (editSelectedFile) {
         updates.image_url = await uploadImage(editSelectedFile);
+      }
+
+      if (editGalleryFiles.length > 0) {
+        const galleryUrls = await Promise.all(editGalleryFiles.map(f => uploadImage(f)));
+        updates.gallery = galleryUrls.join(",");
       }
 
       const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
@@ -725,10 +774,14 @@
     document.getElementById("f-price").value = "";
     document.getElementById("f-cat").value = "";
     document.getElementById("f-sub").value = "";
+    document.getElementById("f-desc").value = "";
     document.getElementById("f-img-file").value = "";
+    document.getElementById("f-gallery-files").value = "";
     document.getElementById("img-preview").style.display = "none";
     document.getElementById("upload-zone").textContent = "📷 Hacé click para subir una foto";
+    document.getElementById("gallery-zone").textContent = "🖼️ Subir más fotos (podés elegir varias a la vez)";
     selectedFile = null;
+    selectedGalleryFiles = [];
   }
 
   function showMsg(type, text) {

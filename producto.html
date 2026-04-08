@@ -38,6 +38,8 @@
           <div class="product__imgwrap">
             <img id="productImage" class="product__img" alt="" loading="eager">
           </div>
+          <!-- Galería de miniaturas (se muestra solo si hay más imágenes) -->
+          <div class="product__gallery" id="productGallery" hidden></div>
         </div>
 
         <!-- Info -->
@@ -55,32 +57,27 @@
           </div>
 
           <!-- Descripción del producto (se muestra solo si existe) -->
-          <div class="product__card" id="productDescCard" hidden>
-            <h3 class="product__cardtitle">Descripción</h3>
-            <p id="productDesc" style="margin:0; font-size:15px; line-height:1.6; color:#333;"></p>
+          <div class=”product__desc-block” id=”productDescCard” hidden>
+            <p id=”productDesc”></p>
           </div>
 
-          <div class="product__card">
-            <h3 class="product__cardtitle">Detalles</h3>
-            <ul class="product__list">
-              <li>Consultá stock y colores por WhatsApp.</li>
-              <li>Retiro/entrega a coordinar en San Rafael.</li>
-              <li>Envíos según zona.</li>
-            </ul>
+          <div class=”product__details”>
+            <span>📦 Consultá stock y colores por WhatsApp</span>
+            <span>📍 Retiro / entrega en San Rafael</span>
+            <span>🚚 Envíos según zona</span>
           </div>
 
-          <div class="product__actions">
-            <a id="productWhatsApp" class="btn btn--primary" target="_blank" rel="noopener">
+          <div class=”product__actions”>
+            <a id=”productWhatsApp” class=”btn btn--whatsapp” target=”_blank” rel=”noopener”>
+              <svg viewBox=”0 0 24 24” width=”20” height=”20” fill=”currentColor” style=”flex-shrink:0”>
+                <path d=”M12 2a10 10 0 00-8.7 15l-1.1 4 4-1A10 10 0 1012 2zm0 18a8 8 0 01-4-1l-.3-.2-2.4.6.6-2.3-.2-.3A8 8 0 1112 20zm4.3-6.1c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.9 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.1-.3 0-.5-.1-.1-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.2.3-1 1-1 2.3 0 1.3 1 2.6 1.1 2.8.1.2 1.9 2.9 4.6 4.1 2.7 1.2 2.7.8 3.2.8.5 0 1.6-.7 1.8-1.3.2-.6.2-1.1.2-1.2 0-.1-.2-.2-.4-.3z”/>
+              </svg>
               Consultar por WhatsApp
             </a>
 
-            <a class="btn btn--ghost" href="index.html#catalogo">
-              Ver más productos
+            <a class=”btn btn--ghost” href=”index.html#catalogo”>
+              ← Ver más
             </a>
-          </div>
-
-          <div class="product__note">
-            Respuesta rápida y sin vueltas. Si preguntás “precio?”, te contestamos igual 😄
           </div>
 
           <!-- Fallback si no hay producto guardado -->
