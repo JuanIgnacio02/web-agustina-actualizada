@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Producto • AGUSTINA</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="page-product">
+
+  <!-- Header igual al de index (pero links a index) -->
+  <header class="header">
+    <div class="header__inner">
+      <a href="index.html" class="brand__name brand__link">AGUSTINA</a>
+      <div class="header__spacer"></div>
+    </div>
+
+    <nav class="nav nav--bottom">
+      <a href="index.html#inicio" class="nav__link">Inicio</a>
+      <a href="index.html#catalogo" class="nav__link">Catálogo</a>
+      <a href="index.html#contacto" class="nav__link">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <section class="product" aria-label="Detalle de producto">
+      <div class="product__topbar">
+        <a class="back-btn" href="index.html#catalogo">← Volver al catálogo</a>
+        <span class="product__tip">Tip: si te enamoraste, no lo pienses mucho… esas cosas vuelan 😌</span>
+      </div>
+
+      <div class="product__layout">
+        <!-- Media -->
+        <div class="product__media">
+          <div class="product__imgwrap">
+            <img id="productImage" class="product__img" alt="" loading="eager">
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="product__info">
+          <div class="product__crumbs" id="productCrumbs"></div>
+
+          <h1 class="product__title" id="productName">Producto</h1>
+
+          <div class="product__meta">
+            <div class="product__price" id="productPrice">$0</div>
+            <div class="product__chips">
+              <span class="pill" id="pillCat" hidden></span>
+              <span class="pill pill--soft" id="pillSub" hidden></span>
+            </div>
+          </div>
+
+          <div class="product__card">
+            <h3 class="product__cardtitle">Detalles</h3>
+            <ul class="product__list">
+              <li>Consultá stock y colores por WhatsApp.</li>
+              <li>Retiro/entrega a coordinar en San Rafael.</li>
+              <li>Envíos según zona.</li>
+            </ul>
+          </div>
+
+          <div class="product__actions">
+            <a id="productWhatsApp" class="btn btn--primary" target="_blank" rel="noopener">
+              Consultar por WhatsApp
+            </a>
+
+            <a class="btn btn--ghost" href="index.html#catalogo">
+              Ver más productos
+            </a>
+          </div>
+
+          <div class="product__note">
+            Respuesta rápida y sin vueltas. Si preguntás “precio?”, te contestamos igual 😄
+          </div>
+
+          <!-- Fallback si no hay producto guardado -->
+          <div class="product__empty" id="productEmpty" hidden>
+            <strong>No hay producto seleccionado.</strong>
+            <p>Volvé al catálogo y tocá un producto.</p>
+            <a class="btn btn--primary" href="index.html#catalogo">Ir al catálogo</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="producto.js" defer></script>
+</body>
+</html>
