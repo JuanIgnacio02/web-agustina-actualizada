@@ -1256,10 +1256,10 @@ body {
 }
 
 .product__actions{
-  display:flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
 }
 
 .product__note{
@@ -1295,7 +1295,7 @@ body {
 
 /* ---- Descripción ---- */
 .product__desc-block{
-  margin: 0 0 18px;
+  margin: 0 0 22px;
   padding: 16px 18px;
   border-left: 3px solid #e8a6b6;
   background: rgba(255,255,255,.6);
@@ -1314,32 +1314,70 @@ body {
 .product__details{
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 22px;
+  gap: 10px;
+  margin-bottom: 28px;
+  padding: 16px 18px;
+  background: rgba(255,255,255,.5);
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.05);
 }
 
-.product__details span{
+.product__detail-item{
   font-size: 13px;
-  color: #666;
+  color: #555;
+  display: block;
 }
 
-/* ---- Botón WhatsApp ---- */
-.btn--whatsapp{
+/* ---- Botones acción ---- */
+.product__actions{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.product__wa-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   background: #25D366;
-  color: white !important;
-  border-color: #25D366;
-  gap: 8px;
-  font-size: 15px;
-  padding: 14px 24px;
+  color: white;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 24px;
   border-radius: 14px;
-  flex: 1;
+  border: none;
+  transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
 }
 
-.btn--whatsapp:hover{
+.product__wa-btn:hover{
   background: #1ebe5d;
-  border-color: #1ebe5d;
   box-shadow: 0 14px 30px rgba(37,211,102,.3);
   transform: translateY(-2px);
+  color: white;
+}
+
+.product__back-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #888;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.5);
+  transition: color .2s, background .2s;
+}
+
+.product__back-btn:hover{
+  color: #333;
+  background: rgba(255,255,255,.9);
 }
 
 /* ---- Galería ---- */
