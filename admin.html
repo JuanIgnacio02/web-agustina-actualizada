@@ -356,9 +356,9 @@
 
           <div class="form-group full">
             <label>Imagen del producto *</label>
+            <input type="file" id="f-img-file" accept="image/*" style="display:none" />
             <div class="img-row">
               <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-img-file').click()">
-                <input type="file" id="f-img-file" accept="image/*" onchange="previewImg(this)" />
                 📷 Hacé click para subir una foto
               </div>
               <img id="img-preview" class="img-preview" src="" alt="preview" />
@@ -388,12 +388,20 @@
 
 <script>
   const SUPABASE_URL = "https://srqkahdyboqannrmkqmf.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_C25BY4_efIwhRHoBqzYvgQ_MqMGmrI7";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNycWthaGR5Ym9xYW5ucm1rcW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MzE5NzYsImV4cCI6MjA5MTIwNzk3Nn0.AhedlrcW9bD_8JF2PvEvIaFsgJDF9ooCy9YdwULEMjk";
   const ADMIN_PWD = "agustina2025"; // ← podés cambiar esta contraseña
 
   // ---- LOGIN ----
   document.getElementById("pwd-input").addEventListener("keydown", e => {
     if (e.key === "Enter") doLogin();
+  });
+
+  // ---- INPUT IMAGEN ----
+  let selectedFile = null;
+
+  document.getElementById("f-img-file").addEventListener("change", function() {
+    selectedFile = this.files[0];
+    previewImg(this);
   });
 
   function doLogin() {
@@ -455,9 +463,7 @@
     const price = parseInt(document.getElementById("f-price").value);
     const cat = document.getElementById("f-cat").value;
     const sub = document.getElementById("f-sub").value;
-    const fileInput = document.getElementById("f-img-file");
-
-    if (!name || !price || !cat || !fileInput.files[0]) {
+    if (!name || !price || !cat || !selectedFile) {
       showMsg("err", "Completá nombre, precio, categoría e imagen");
       return;
     }
@@ -467,7 +473,7 @@
     btn.textContent = "Guardando...";
 
     try {
-      const imageUrl = await uploadImage(fileInput.files[0]);
+      const imageUrl = await uploadImage(selectedFile);
 
       const res = await fetch(`${SUPABASE_URL}/rest/v1/productos`, {
         method: "POST",
@@ -586,6 +592,7 @@
     document.getElementById("f-img-file").value = "";
     document.getElementById("img-preview").style.display = "none";
     document.getElementById("upload-zone").textContent = "📷 Hacé click para subir una foto";
+    selectedFile = null;
   }
 
   function showMsg(type, text) {
