@@ -130,25 +130,25 @@ body{
   position:absolute;
   left:0;
   bottom:-4px;
-  width:0%;
-  height:1.5px;
-  background:#e8b6c8; /* rosa Agustina */
-  transition: width .25s ease;
-}
-
-.nav__link:hover::after{
   width:100%;
+  height:1px;
+  background:#c06080;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .3s ease;
 }
 
 .nav__link:hover{
-  background: rgba(255,255,255,0.85);
-  border-color: rgba(0,0,0,0.10);
-  transform: translateY(-1px);
+  color: #c06080;
+  transition: color .25s ease;
+}
+
+.nav__link:hover::after{
+  transform: scaleX(1);
 }
 
 .nav__link--active{
-  background: rgba(255,255,255,0.95);
-  border-color: rgba(0,0,0,0.14);
+  color: #c06080;
 }
 
 .nav--bottom{
@@ -180,8 +180,6 @@ body{
 }
 
 .nav--bottom .nav__link::after {
-  background: #c06080;
-  height: 1px;
   bottom: -2px;
 }
 
