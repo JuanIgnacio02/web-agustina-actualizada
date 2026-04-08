@@ -475,15 +475,14 @@
     try {
       const imageUrl = await uploadImage(selectedFile);
 
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/productos`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/guardar-producto`, {
         method: "POST",
         headers: {
           "apikey": SUPABASE_KEY,
           "Authorization": `Bearer ${SUPABASE_KEY}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name, price, image_url: imageUrl, cat, sub, activo: true })
+        body: JSON.stringify({ name, price, image_url: imageUrl, cat, sub })
       });
 
       if (!res.ok) throw new Error("Error al guardar en base de datos");
