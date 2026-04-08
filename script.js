@@ -21,7 +21,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       price: p.price,
       image: p.image_url,
       cat: p.cat,
-      sub: p.sub
+      sub: p.sub,
+      description: p.description || ""
     }));
   }
 
@@ -41,15 +42,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   const chipGroup = document.querySelector(".chip-group");
 
 if (chipGroup) {
+  const parentChip = chipGroup.querySelector(".chip-parent");
+  const subMenu    = chipGroup.querySelector(".chip-sub");
 
-  chipGroup.addEventListener("mouseenter", () => {
-    chipGroup.classList.add("open");
+  // Abrir/cerrar al hacer click en "Indumentaria"
+  if (parentChip) {
+    parentChip.addEventListener("click", () => {
+      chipGroup.classList.toggle("open");
+    });
+  }
+
+  // Cerrar cuando se elige una subcategoría
+  if (subMenu) {
+    subMenu.addEventListener("click", () => {
+      chipGroup.classList.remove("open");
+    });
+  }
+
+  // Cerrar si se hace click en cualquier otro lado
+  document.addEventListener("click", (e) => {
+    if (!chipGroup.contains(e.target)) {
+      chipGroup.classList.remove("open");
+    }
   });
-
-  chipGroup.addEventListener("mouseleave", () => {
-    chipGroup.classList.remove("open");
-  });
-
 }
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
@@ -117,7 +132,8 @@ if (chipGroup) {
       data-image="${p.image}"
       data-price="${p.price}"
       data-cat="${p.cat}"
-      data-sub="${p.sub}">
+      data-sub="${p.sub}"
+      data-description="${(p.description || "").replace(/"/g, '&quot;')}">
 
   <div class="card__media">
     <span class="card__badge">NUEVO</span>
@@ -213,7 +229,8 @@ grid.addEventListener("click", (e) => {
     image: card.dataset.image,
     price: card.dataset.price,
     cat: card.dataset.cat,
-    sub: card.dataset.sub
+    sub: card.dataset.sub,
+    description: card.dataset.description || ""
   };
 
   localStorage.setItem("productoSeleccionado", JSON.stringify(product));

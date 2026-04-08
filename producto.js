@@ -27,11 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const name = product?.name || "Producto";
-  const price = Number(product?.price || 0);
-  const image = product?.image || "";
-  const cat = product?.cat || "";
-  const sub = product?.sub || "";
+  const name        = product?.name        || "Producto";
+  const price       = Number(product?.price || 0);
+  const image       = product?.image       || "";
+  const cat         = product?.cat         || "";
+  const sub         = product?.sub         || "";
+  const description = product?.description || "";
 
   nameEl.textContent = name;
   priceEl.textContent = "$" + price.toLocaleString("es-AR");
@@ -54,6 +55,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   crumbsEl.textContent = `Catálogo${catLabel ? " / " + catLabel : ""}${subLabel ? " / " + subLabel : ""}`;
+
+  // Descripción
+  const descCard = document.getElementById("productDescCard");
+  const descEl   = document.getElementById("productDesc");
+  if (description && descCard && descEl) {
+    descEl.textContent = description;
+    descCard.hidden = false;
+  }
 
   // WhatsApp link (mensaje más lindo)
   const msg = `Hola! 👋 Quiero consultar por: ${name}. ¿Está disponible?`;

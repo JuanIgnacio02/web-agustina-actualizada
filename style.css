@@ -1103,8 +1103,7 @@ body {
   transition:.2s;
 }
 
-.chip-group:hover .chip-sub,
-.chip-sub:hover{
+.chip-group.open .chip-sub{
   opacity:1;
   transform:translateY(0);
   pointer-events:auto;
