@@ -22,7 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       image: p.image_url,
       cat: p.cat,
       sub: p.sub,
-      description: p.description || ""
+      description: p.description || "",
+      created_at: p.created_at || ""
     }));
   }
 
@@ -126,8 +127,20 @@ if (chipGroup) {
     if (filter.type === "cat") list = products.filter((p) => p.cat === filter.value);
     if (filter.type === "sub") list = products.filter((p) => p.sub === filter.value);
 
-    grid.innerHTML = list.map(p => `
+    if (list.length === 0) {
+      grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem 1rem; color:#aaa; font-size:15px;">
+        Todavía no hay productos en esta categoría 🌸
+      </p>`;
+      return;
+    }
+
+    grid.innerHTML = list.map(p => {
+      const isNew = p.created_at
+        ? (Date.now() - new Date(p.created_at).getTime()) < 14 * 24 * 60 * 60 * 1000
+        : false;
+      return `
       <article class="card product-link"
+      data-id="${p.id}"
       data-name="${p.name}"
       data-image="${p.image}"
       data-price="${p.price}"
@@ -136,7 +149,7 @@ if (chipGroup) {
       data-description="${(p.description || "").replace(/"/g, '&quot;')}">
 
   <div class="card__media">
-    <span class="card__badge">NUEVO</span>
+    ${isNew ? '<span class="card__badge">NUEVO</span>' : ''}
     <img src="${p.image}" class="card__img" alt="${p.name}">
   </div>
 
@@ -154,8 +167,8 @@ if (chipGroup) {
     </div>
   </div>
 
-</article>
-    `).join("");
+</article>`;
+    }).join("");
 
     observeCards();
   }
@@ -224,18 +237,7 @@ grid.addEventListener("click", (e) => {
   const card = e.target.closest(".product-link");
   if (!card) return;
 
-  const product = {
-    name: card.dataset.name,
-    image: card.dataset.image,
-    price: card.dataset.price,
-    cat: card.dataset.cat,
-    sub: card.dataset.sub,
-    description: card.dataset.description || ""
-  };
-
-  localStorage.setItem("productoSeleccionado", JSON.stringify(product));
-
-  window.location.href = "producto.html";
+  window.location.href = `producto.html?id=${card.dataset.id}`;
 });
   
 });
