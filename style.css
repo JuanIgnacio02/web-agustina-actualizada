@@ -339,6 +339,7 @@ body{
   border-radius: 28px;
   transform: rotate(-1.5deg);
   z-index: 3;
+  object-position: top center;
 }
 
 /* TOP: modelo (arriba derecha) */
@@ -841,6 +842,7 @@ body{
   width: 300px;          /* antes 420 / 360 */
   aspect-ratio: 1 / 1.1;
   position: relative;
+  background: #fff7fa;   /* evita que se vea fondo extraño en esquinas rotadas */
 }
 
 /* eliminamos el efecto papel si todavía existe */
