@@ -238,24 +238,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             ${isNew ? '<span class="card__badge">NUEVO</span>' : ""}
             <img src="${allImgs[0] || ""}" class="card__img" alt="${p.name}">
             ${dots}
+            <button class="card__add-btn"
+              data-cart-id="${p.id}"
+              data-cart-name="${nameEncoded}"
+              data-cart-price="${p.price}"
+              data-cart-image="${imgEncoded}"
+              data-cart-cat="${p.cat || ""}"
+              aria-label="Agregar al carrito">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 01-8 0"/>
+              </svg>
+            </button>
           </div>
           <div class="card__info">
             ${catLabel ? `<span class="card__cat">${catLabel}</span>` : ""}
             <h3 class="card__title">${p.name}</h3>
-            <div class="card__price-row">
-              <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
-              <button class="card__add-btn"
-                data-cart-id="${p.id}"
-                data-cart-name="${nameEncoded}"
-                data-cart-price="${p.price}"
-                data-cart-image="${imgEncoded}"
-                data-cart-cat="${p.cat || ""}"
-                aria-label="Agregar al carrito">
-                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
-                </svg>
-              </button>
-            </div>
+            <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
           </div>
         </article>`;
     }).join("");

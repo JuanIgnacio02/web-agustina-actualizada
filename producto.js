@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // WhatsApp directo (solo este producto)
   const msg = `Hola Agustina! 👋 Quiero consultar por: *${name}*. ¿Está disponible?`;
-  document.getElementById("prdWA").href = `https://wa.me/5492604002520?text=${encodeURIComponent(msg)}`;
+  document.getElementById("prdWA").href = `https://wa.me/5492604009647?text=${encodeURIComponent(msg)}`;
 
   // Botón "Agregar al carrito"
   const cartBtn = document.getElementById("prdCartBtn");

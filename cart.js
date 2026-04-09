@@ -4,7 +4,7 @@
    ============================================= */
 (function () {
   const CART_KEY  = "agustina_cart_v1";
-  const WA_NUMBER = "5492604002520";
+  const WA_NUMBER = "5492604009647";
 
   // ── Persistencia ─────────────────────────────────────
   function getCart() {
