@@ -1583,7 +1583,10 @@ body {
 
   .section__title { font-size: 22px; }
 
-  /* ── Botón hamburguesa ── */
+  /* ── Filtros desktop: ocultos en mobile ── */
+  .catalogo__chips { display: none !important; }
+
+  /* ── Botón "Filtros" ── */
   .filter-burger {
     display: inline-flex;
     align-items: center;
@@ -1591,161 +1594,172 @@ body {
     background: white;
     border: 1px solid rgba(0,0,0,.1);
     border-radius: 999px;
-    padding: 8px 14px;
+    padding: 9px 16px;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 500;
-    color: #444;
+    letter-spacing: .04em;
+    color: #333;
     cursor: pointer;
     flex-shrink: 0;
-    transition: background .18s ease, box-shadow .18s ease;
+    transition: all .18s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
   }
 
-  .filter-burger:hover,
   .filter-burger[aria-expanded="true"] {
-    background: #f5edf0;
-    box-shadow: 0 4px 12px rgba(192,96,128,.12);
-    border-color: rgba(192,96,128,.25);
+    background: #f0e4ea;
+    border-color: rgba(192,96,128,.3);
     color: #7a2040;
   }
 
-  .filter-burger__active {
+  .filter-burger__badge {
     display: none;
-    font-size: 11px;
-    font-weight: 600;
-    color: #c06080;
-    max-width: 90px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 10px;
+    font-weight: 700;
+    background: #c06080;
+    color: white;
+    border-radius: 999px;
+    padding: 1px 7px;
+    margin-left: 2px;
   }
+  .filter-burger__badge:not(:empty) { display: inline-block; }
 
-  .filter-burger__active:not(:empty) {
-    display: block;
-  }
-
-  /* ── Backdrop difuminado ── */
+  /* ── Backdrop oscuro ── */
   .filter-backdrop {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(20, 10, 15, 0.35);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 98;
-    animation: fadeIn .2s ease;
+    background: rgba(10, 5, 8, 0.55);
+    z-index: 299;
+    animation: sheetFadeIn .25s ease;
+  }
+  .filter-backdrop.is-open { display: block; }
+
+  @keyframes sheetFadeIn {
+    from { opacity: 0; } to { opacity: 1; }
   }
 
-  .filter-backdrop.is-open {
+  /* ── Bottom Sheet ── */
+  .m-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    z-index: 300;
+    max-height: 78vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateY(100%);
+    transition: transform .32s cubic-bezier(0.32, 0.72, 0, 1);
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+
+  .m-sheet.is-open {
+    transform: translateY(0);
+  }
+
+  .m-sheet__handle {
+    width: 36px; height: 4px;
+    background: #e0d8db;
+    border-radius: 999px;
+    margin: 12px auto 4px;
+  }
+
+  .m-sheet__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+
+  .m-sheet__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
+
+  .m-sheet__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #f5f0f2;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    transition: background .15s ease;
+  }
+  .m-sheet__close:hover { background: #ece0e5; }
+
+  /* ── Lista de filtros dentro del sheet ── */
+  .m-sheet__list {
+    padding: 8px 12px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .m-sheet-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 12px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: #1a1a1a;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: background .15s ease;
+  }
+
+  .m-sheet-item:hover,
+  .m-sheet-item:active { background: #faf0f4; }
+
+  .m-sheet-item.is-active {
+    font-weight: 600;
+    color: #7a2040;
+  }
+
+  .m-sheet-item__check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #ddd;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s ease;
+  }
+
+  .m-sheet-item.is-active .m-sheet-item__check {
+    background: #c06080;
+    border-color: #c06080;
+  }
+
+  .m-sheet-item.is-active .m-sheet-item__check::after {
+    content: '';
+    width: 5px; height: 9px;
+    border: 2px solid white;
+    border-top: none; border-left: none;
+    transform: rotate(45deg) translateY(-1px);
     display: block;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  /* ── Panel de chips en mobile (flota encima) ── */
-  .catalogo__chips {
-    display: none;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    background: white;
-    border-radius: 16px;
-    border: 1px solid rgba(0,0,0,.07);
-    box-shadow: 0 16px 48px rgba(0,0,0,.18);
-    padding: 8px;
-    gap: 2px;
-
-    /* Flotante — no empuja el contenido */
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    right: 0;
-    z-index: 99;
-  }
-
-  .catalogo__chips.is-open {
-    display: flex;
-    animation: slideDown .2s ease;
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Chips dentro del panel: más grandes, estilo lista */
-  .chip {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: .06em;
-    padding: 12px 16px;
-    border-radius: 10px;
-    text-transform: none;
-    color: #333;
-    text-align: left;
-    border-bottom: none !important;
-  }
-
-  .chip::after { display: none !important; }
-
-  .chip:hover {
-    background: rgba(240,210,220,.35);
-    color: #3a1030;
-  }
-
-  .chip.is-active {
-    background: #f5edf0;
-    color: #7a2040;
-    font-weight: 700;
-  }
-
-  /* Submenú en mobile: no flotante, inline */
-  .chip-group { position: static; }
-
-  .chip-sub {
-    position: static;
-    opacity: 1 !important;
-    transform: none !important;
-    pointer-events: auto !important;
-    display: none;
-    flex-direction: column;
-    gap: 2px;
-    padding: 0 0 0 16px;
-    background: none;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-    min-width: unset;
-  }
-
-  .chip-group.open .chip-sub {
-    display: flex;
-  }
-
-  .chip-sub .chip {
-    font-size: 12px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    color: #666;
-  }
-
-  /* Divisor entre chips en panel */
-  .catalogo__chips > .chip + .chip,
-  .catalogo__chips > .chip-group + .chip,
-  .catalogo__chips > .chip + .chip-group {
-    border-top: 1px solid rgba(0,0,0,.05) !important;
-    border-radius: 0 !important;
-  }
-  .catalogo__chips > *:first-child .chip,
-  .catalogo__chips > .chip:first-child {
-    border-radius: 10px 10px 0 0 !important;
-  }
-  .catalogo__chips > *:last-child .chip:last-child,
-  .catalogo__chips > .chip:last-child {
-    border-radius: 0 0 10px 10px !important;
+  /* Separador de grupo */
+  .m-sheet-divider {
+    height: 1px;
+    background: rgba(0,0,0,.05);
+    margin: 4px 12px;
   }
 
   /* ── Grid: 2 columnas siempre ── */

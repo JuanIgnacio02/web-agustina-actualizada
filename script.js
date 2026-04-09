@@ -14,66 +14,154 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── DOM refs ────────────────────────────────────────
-  const grid        = document.getElementById("product-grid");
-  const sectionTitle = document.getElementById("section-title");
-  const yearEl      = document.getElementById("year");
-  const chips       = document.getElementById("catalogoChips");
-  const chipGroup   = document.querySelector(".chip-group");
-  const header      = document.querySelector(".header");
-  const filterBurger = document.getElementById("filterBurger");
-  const filterBurgerActive = document.getElementById("filterBurgerActive");
-  const filterBackdrop = document.getElementById("filterBackdrop");
+  const grid             = document.getElementById("product-grid");
+  const sectionTitle     = document.getElementById("section-title");
+  const yearEl           = document.getElementById("year");
+  const chips            = document.getElementById("catalogoChips");
+  const chipGroup        = document.querySelector(".chip-group");
+  const header           = document.querySelector(".header");
+  const filterBurger     = document.getElementById("filterBurger");
+  const filterBurgerBadge = document.getElementById("filterBurgerActive");
+  const filterBackdrop   = document.getElementById("filterBackdrop");
+  const mSheet           = document.getElementById("mSheet");
+  const mSheetClose      = document.getElementById("mSheetClose");
+  const mSheetList       = document.getElementById("mSheetList");
 
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  // ── Botón hamburguesa de filtros (mobile) ───────────
   function isMobile() { return window.innerWidth <= 768; }
 
-  if (filterBurger) {
-    filterBurger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      chips.classList.contains("is-open") ? closeBurgerMenu() : openBurgerMenu();
-    });
+  // ── Construir lista del bottom sheet desde los chips ─
+  let activeFilter = { type: "all", value: "all" };
 
-    // Cerrar al tocar el backdrop
-    if (filterBackdrop) {
-      filterBackdrop.addEventListener("click", () => closeBurgerMenu());
-    }
+  function buildSheetList() {
+    if (!mSheetList || !chips) return;
+    mSheetList.innerHTML = "";
 
-    // Cerrar al tocar fuera (fallback)
-    document.addEventListener("click", (e) => {
-      if (isMobile() && chips && chips.classList.contains("is-open") &&
-          !chips.contains(e.target) && !filterBurger.contains(e.target)) {
-        closeBurgerMenu();
+    chips.querySelectorAll("[data-filter]").forEach((btn, i) => {
+      // Separador visual antes del primer subchip de Indumentaria
+      if (btn.closest(".chip-sub") && i === 0) return; // lo manejamos abajo
+
+      const item = document.createElement("button");
+      item.className = "m-sheet-item";
+      item.dataset.filter = btn.dataset.filter;
+      item.dataset.value  = btn.dataset.value;
+
+      const isSubItem = !!btn.closest(".chip-sub");
+      const label = btn.textContent.replace("▾","").trim();
+      item.innerHTML = `
+        <span style="${isSubItem ? "padding-left:14px;color:#666;font-size:14px;" : ""}">${label}</span>
+        <span class="m-sheet-item__check"></span>
+      `;
+
+      if (btn.dataset.value === activeFilter.value) {
+        item.classList.add("is-active");
+      }
+
+      item.addEventListener("click", () => {
+        const type  = item.dataset.filter;
+        const value = item.dataset.value;
+        applyFilter(type, value, label);
+        setTimeout(() => closeSheet(), 180);
+      });
+
+      mSheetList.appendChild(item);
+
+      // Si es el grupo Indumentaria, añadir sus sub-items inmediatamente
+      if (btn.classList.contains("chip-parent")) {
+        const divider = document.createElement("div");
+        divider.className = "m-sheet-divider";
+        // mSheetList.appendChild(divider); // solo si hay subcats
+        btn.closest(".chip-group")?.querySelectorAll(".chip-sub .chip").forEach(sub => {
+          const subItem = document.createElement("button");
+          subItem.className = "m-sheet-item";
+          subItem.dataset.filter = sub.dataset.filter;
+          subItem.dataset.value  = sub.dataset.value;
+          const subLabel = sub.textContent.trim();
+          subItem.innerHTML = `
+            <span style="padding-left:18px;color:#888;font-size:14px;">${subLabel}</span>
+            <span class="m-sheet-item__check"></span>
+          `;
+          if (sub.dataset.value === activeFilter.value) subItem.classList.add("is-active");
+          subItem.addEventListener("click", () => {
+            applyFilter(sub.dataset.filter, sub.dataset.value, subLabel);
+            setTimeout(() => closeSheet(), 180);
+          });
+          mSheetList.appendChild(subItem);
+        });
+        mSheetList.appendChild(divider);
       }
     });
   }
 
-  function openBurgerMenu() {
-    if (chips) chips.classList.add("is-open");
-    if (filterBackdrop) filterBackdrop.classList.add("is-open");
-    if (filterBurger) filterBurger.setAttribute("aria-expanded", "true");
+  function applyFilter(type, value, label) {
+    activeFilter = { type, value };
+    const displayLabel = type === "all" ? "Todo" : label;
+
+    if (sectionTitle) sectionTitle.textContent = displayLabel;
+    if (filterBurgerBadge) {
+      filterBurgerBadge.textContent = type === "all" ? "" : displayLabel;
+    }
+
+    // Sync chips desktop
+    if (chips) {
+      chips.querySelectorAll(".chip").forEach(c =>
+        c.classList.toggle("is-active", c.dataset.value === value)
+      );
+    }
+
+    grid.classList.add("is-animating");
+    setTimeout(() => {
+      renderProducts({ type, value });
+      requestAnimationFrame(() => grid.classList.remove("is-animating"));
+    }, 140);
+
+    document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
   }
 
-  function closeBurgerMenu() {
-    if (chips) chips.classList.remove("is-open");
-    if (filterBackdrop) filterBackdrop.classList.remove("is-open");
-    if (filterBurger) filterBurger.setAttribute("aria-expanded", "false");
+  // ── Bottom sheet open/close ─────────────────────────
+  function openSheet() {
+    buildSheetList();
+    mSheet?.classList.add("is-open");
+    mSheet?.removeAttribute("aria-hidden");
+    filterBackdrop?.classList.add("is-open");
+    filterBurger?.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
   }
 
-  // ── Submenú Indumentaria (click) ────────────────────
+  function closeSheet() {
+    mSheet?.classList.remove("is-open");
+    mSheet?.setAttribute("aria-hidden", "true");
+    filterBackdrop?.classList.remove("is-open");
+    filterBurger?.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  }
+
+  if (filterBurger) {
+    filterBurger.addEventListener("click", () => {
+      isMobile() ? (mSheet?.classList.contains("is-open") ? closeSheet() : openSheet()) : null;
+    });
+  }
+  mSheetClose?.addEventListener("click", closeSheet);
+  filterBackdrop?.addEventListener("click", closeSheet);
+
+  // Cerrar con swipe hacia abajo (touch)
+  if (mSheet) {
+    let startY = 0;
+    mSheet.addEventListener("touchstart", e => { startY = e.touches[0].clientY; }, { passive: true });
+    mSheet.addEventListener("touchend", e => {
+      if (e.changedTouches[0].clientY - startY > 60) closeSheet();
+    }, { passive: true });
+  }
+
+  // ── Submenú Indumentaria desktop (click) ────────────
   if (chipGroup) {
     const parentChip = chipGroup.querySelector(".chip-parent");
     const subMenu    = chipGroup.querySelector(".chip-sub");
-
-    if (parentChip) {
-      parentChip.addEventListener("click", () => chipGroup.classList.toggle("open"));
-    }
-    if (subMenu) {
-      subMenu.addEventListener("click", () => chipGroup.classList.remove("open"));
-    }
+    if (parentChip) parentChip.addEventListener("click", () => chipGroup.classList.toggle("open"));
+    if (subMenu)    subMenu.addEventListener("click",    () => chipGroup.classList.remove("open"));
     document.addEventListener("click", (e) => {
-      if (!chipGroup.contains(e.target) && !isMobile()) chipGroup.classList.remove("open");
+      if (!isMobile() && !chipGroup.contains(e.target)) chipGroup.classList.remove("open");
     });
   }
 
@@ -198,38 +286,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ── Chips filtros ───────────────────────────────────
+  // ── Chips filtros (desktop) ─────────────────────────
   if (chips) {
     chips.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-filter]");
-      if (!btn) return;
-
-      const type  = btn.dataset.filter;
-      const value = btn.dataset.value;
-
-      const label = type === "all" ? "Todo" : btn.textContent.trim().replace("▾", "").trim();
-
-      if (sectionTitle) sectionTitle.textContent = label;
-
-      // Actualizar label del botón hamburguesa en mobile
-      if (filterBurgerActive) {
-        filterBurgerActive.textContent = type === "all" ? "" : label;
-      }
-
-      // Cerrar el panel en mobile
-      if (isMobile()) {
-        setTimeout(() => closeBurgerMenu(), 180);
-      }
-
-      grid.classList.add("is-animating");
-      setTimeout(() => {
-        renderProducts({ type, value });
-        requestAnimationFrame(() => grid.classList.remove("is-animating"));
-      }, 140);
-
-      chips.querySelectorAll(".chip").forEach(c => c.classList.remove("is-active"));
-      btn.classList.add("is-active");
-      document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+      if (!btn || isMobile()) return;
+      const label = btn.textContent.trim().replace("▾", "").trim();
+      applyFilter(btn.dataset.filter, btn.dataset.value, label);
     });
   }
 
@@ -247,16 +310,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Si viene con ?cat=giftcards en la URL, filtrar directamente
   const urlCat = new URLSearchParams(window.location.search).get("cat");
   if (urlCat) {
-    // Limpiar la URL para que no persista al refrescar
     history.replaceState(null, '', window.location.pathname);
-    renderProducts({ type: "cat", value: urlCat });
-    chips?.querySelectorAll(".chip").forEach(c => {
-      c.classList.toggle("is-active", c.dataset.value === urlCat);
-    });
-    if (sectionTitle) {
-      const matchChip = chips?.querySelector(`[data-value="${urlCat}"]`);
-      if (matchChip) sectionTitle.textContent = matchChip.textContent.trim();
-    }
+    const matchChip = chips?.querySelector(`[data-value="${urlCat}"]`);
+    const label = matchChip ? matchChip.textContent.replace("▾","").trim() : urlCat;
+    applyFilter("cat", urlCat, label);
     document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
   } else {
     renderProducts({ type: "all", value: "all" });
