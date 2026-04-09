@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const header      = document.querySelector(".header");
   const filterBurger = document.getElementById("filterBurger");
   const filterBurgerActive = document.getElementById("filterBurgerActive");
+  const filterBackdrop = document.getElementById("filterBackdrop");
 
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
@@ -31,21 +32,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (filterBurger) {
     filterBurger.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isOpen = chips.classList.toggle("is-open");
-      filterBurger.setAttribute("aria-expanded", isOpen);
+      chips.classList.contains("is-open") ? closeBurgerMenu() : openBurgerMenu();
     });
 
-    // Cerrar al tocar fuera
+    // Cerrar al tocar el backdrop
+    if (filterBackdrop) {
+      filterBackdrop.addEventListener("click", () => closeBurgerMenu());
+    }
+
+    // Cerrar al tocar fuera (fallback)
     document.addEventListener("click", (e) => {
-      if (isMobile() && chips && !chips.contains(e.target) && !filterBurger.contains(e.target)) {
-        chips.classList.remove("is-open");
-        filterBurger.setAttribute("aria-expanded", "false");
+      if (isMobile() && chips && chips.classList.contains("is-open") &&
+          !chips.contains(e.target) && !filterBurger.contains(e.target)) {
+        closeBurgerMenu();
       }
     });
   }
 
+  function openBurgerMenu() {
+    if (chips) chips.classList.add("is-open");
+    if (filterBackdrop) filterBackdrop.classList.add("is-open");
+    if (filterBurger) filterBurger.setAttribute("aria-expanded", "true");
+  }
+
   function closeBurgerMenu() {
     if (chips) chips.classList.remove("is-open");
+    if (filterBackdrop) filterBackdrop.classList.remove("is-open");
     if (filterBurger) filterBurger.setAttribute("aria-expanded", "false");
   }
 

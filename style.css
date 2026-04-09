@@ -1496,7 +1496,11 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  position: relative; /* ancla el panel flotante */
 }
+
+/* Backdrop: oculto en desktop */
+.filter-backdrop { display: none; }
 
 .filter-burger {
   display: none; /* se muestra solo en mobile */
@@ -1620,7 +1624,28 @@ body {
     display: block;
   }
 
-  /* ── Panel de chips en mobile ── */
+  /* ── Backdrop difuminado ── */
+  .filter-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 10, 15, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 98;
+    animation: fadeIn .2s ease;
+  }
+
+  .filter-backdrop.is-open {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── Panel de chips en mobile (flota encima) ── */
   .catalogo__chips {
     display: none;
     flex-direction: column;
@@ -1629,16 +1654,16 @@ body {
     background: white;
     border-radius: 16px;
     border: 1px solid rgba(0,0,0,.07);
-    box-shadow: 0 12px 36px rgba(0,0,0,.1);
+    box-shadow: 0 16px 48px rgba(0,0,0,.18);
     padding: 8px;
-    margin-top: 10px;
-    margin-bottom: 20px;
     gap: 2px;
-    position: relative;
-    z-index: 100;
 
-    /* animación */
-    animation: none;
+    /* Flotante — no empuja el contenido */
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 99;
   }
 
   .catalogo__chips.is-open {
@@ -1647,7 +1672,7 @@ body {
   }
 
   @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-8px); }
+    from { opacity: 0; transform: translateY(-6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
