@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  function applyFilter(type, value, label) {
+  function applyFilter(type, value, label, scroll = false) {
     activeFilter = { type, value };
     const displayLabel = type === "all" ? "Todo" : label;
 
@@ -108,7 +108,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       requestAnimationFrame(() => grid.classList.remove("is-animating"));
     }, 140);
 
-    document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+    if (scroll) {
+      document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   // ── Bottom sheet open/close ─────────────────────────
@@ -366,8 +368,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     history.replaceState(null, '', window.location.pathname);
     const matchChip = chips?.querySelector(`[data-value="${urlCat}"]`);
     const label = matchChip ? matchChip.textContent.replace("▾","").trim() : urlCat;
-    applyFilter("cat", urlCat, label);
-    document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+    applyFilter("cat", urlCat, label, true);
   } else {
     renderProducts({ type: "all", value: "all" });
   }
