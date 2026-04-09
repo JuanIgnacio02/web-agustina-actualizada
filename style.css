@@ -1816,7 +1816,7 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(10, 5, 10, 0.5);
-  z-index: 1099;
+  z-index: 3099;
   animation: cartFadeIn .22s ease;
 }
 .cart-overlay.is-open { display: block; }
@@ -1829,7 +1829,7 @@ body {
   top: 0; right: 0; bottom: 0;
   width: min(400px, 100vw);
   background: #fff;
-  z-index: 1100;
+  z-index: 3100;
   display: flex;
   flex-direction: column;
   overflow: hidden; /* el scroll queda solo en __body */
@@ -1879,11 +1879,12 @@ body {
 /* Cuerpo — lista de items */
 .cart-panel__body {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   padding: 16px 16px 8px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 /* Empty state */
@@ -2072,7 +2073,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1050;
+  z-index: 3050;
   box-shadow: 0 8px 24px rgba(0,0,0,.22);
   transition: transform .2s ease, box-shadow .2s ease, background .2s;
 }
@@ -2185,7 +2186,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  z-index: 1200;
+  z-index: 3200;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity .22s ease, transform .22s ease;

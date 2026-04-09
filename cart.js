@@ -71,17 +71,19 @@
 
   function lockBodyScroll() {
     _scrollY = window.scrollY;
+    document.documentElement.style.overflow = "hidden";
+    document.documentElement.style.height   = "100%";
     document.body.style.overflow   = "hidden";
-    document.body.style.position   = "fixed";
-    document.body.style.top        = `-${_scrollY}px`;
-    document.body.style.width      = "100%";
+    document.body.style.height     = "100%";
+    document.body.style.touchAction = "none";
   }
 
   function unlockBodyScroll() {
-    document.body.style.overflow  = "";
-    document.body.style.position  = "";
-    document.body.style.top       = "";
-    document.body.style.width     = "";
+    document.documentElement.style.overflow = "";
+    document.documentElement.style.height   = "";
+    document.body.style.overflow   = "";
+    document.body.style.height     = "";
+    document.body.style.touchAction = "";
     window.scrollTo(0, _scrollY);
   }
 
