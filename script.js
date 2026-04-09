@@ -227,6 +227,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             `<span class="card__dot${i === 0 ? " is-active" : ""}"></span>`).join("")}</div>`
         : "";
 
+      const imgEncoded = encodeURIComponent(allImgs[0] || "");
+      const nameEncoded = encodeURIComponent(p.name);
+
       return `
         <article class="card product-link"
           data-id="${p.id}"
@@ -239,7 +242,20 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div class="card__info">
             ${catLabel ? `<span class="card__cat">${catLabel}</span>` : ""}
             <h3 class="card__title">${p.name}</h3>
-            <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
+            <div class="card__price-row">
+              <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
+              <button class="card__add-btn"
+                data-cart-id="${p.id}"
+                data-cart-name="${nameEncoded}"
+                data-cart-price="${p.price}"
+                data-cart-image="${imgEncoded}"
+                data-cart-cat="${p.cat || ""}"
+                aria-label="Agregar al carrito">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </article>`;
     }).join("");
@@ -296,8 +312,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ── Click en card → página de producto ─────────────
+  // ── Click en "+" → agregar al carrito ──────────────
   grid.addEventListener("click", (e) => {
+    const addBtn = e.target.closest(".card__add-btn");
+    if (addBtn) {
+      e.stopPropagation();
+      if (typeof cartAdd === "function") {
+        cartAdd({
+          id:    addBtn.dataset.cartId,
+          name:  decodeURIComponent(addBtn.dataset.cartName),
+          price: Number(addBtn.dataset.cartPrice),
+          image: decodeURIComponent(addBtn.dataset.cartImage),
+          cat:   addBtn.dataset.cartCat,
+        });
+      }
+      return;
+    }
+
+    // ── Click en card → página de producto ────────────
     const card = e.target.closest(".product-link");
     if (!card) return;
     window.location.href = `producto.html?id=${card.dataset.id}`;

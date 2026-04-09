@@ -58,9 +58,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     descEl.style.display = "block";
   }
 
-  // WhatsApp
-  const msg = `Hola! 👋 Quiero consultar por: ${name}. ¿Está disponible?`;
+  // WhatsApp directo (solo este producto)
+  const msg = `Hola Agustina! 👋 Quiero consultar por: *${name}*. ¿Está disponible?`;
   document.getElementById("prdWA").href = `https://wa.me/5492604002520?text=${encodeURIComponent(msg)}`;
+
+  // Botón "Agregar al carrito"
+  const cartBtn = document.getElementById("prdCartBtn");
+  if (cartBtn) {
+    cartBtn.addEventListener("click", () => {
+      if (typeof cartAdd === "function") {
+        cartAdd({ id: String(product.id), name, price, image: images[0] || image, cat });
+        cartBtn.classList.add("added");
+        cartBtn.innerHTML = `
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 10 8 14 16 6"/></svg>
+          Agregado al carrito`;
+        setTimeout(() => {
+          cartBtn.classList.remove("added");
+          cartBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            Agregar al carrito`;
+        }, 2000);
+      }
+    });
+  }
 
   // Galería thumbnails
   const thumbsEl = document.getElementById("prdThumbs");
