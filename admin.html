@@ -320,6 +320,38 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* ---- PANEL EDICIÓN INLINE ---- */
+    .edit-panel {
+      background: #fff7fa;
+      border-top: 1px solid #f0d6e0;
+      padding: 16px 18px;
+    }
+    .edit-panel__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 600px) { .edit-panel__grid { grid-template-columns: 1fr; } }
+    .edit-panel__actions { display: flex; gap: 8px; }
+
+    /* ---- BOTÓN × en foto ---- */
+    .img-panel__thumb-del {
+      position: absolute;
+      top: -5px; right: -5px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #c0392b;
+      color: white;
+      border: none;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    .img-panel__thumb-del:hover { background: #a93226; }
+
     /* ---- UPLOAD ---- */
     .upload-zone {
       border: 2px dashed #e0c8d4;
@@ -595,14 +627,10 @@
 
     list.innerHTML = products.map(p => {
       const imgs = p.images && p.images.length ? p.images : (p.image_url ? [p.image_url] : []);
-      const thumbsHtml = imgs.map((url, i) => `
-        <div class="img-panel__thumb-wrap">
-          <img src="${url}" class="img-panel__thumb" onerror="this.style.display='none'" />
-          ${i === 0 ? '<span class="img-panel__badge">Principal</span>' : ''}
-        </div>`).join("");
+      const safeName = p.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
 
       return `
-      <div class="product-item-wrap">
+      <div class="product-item-wrap" id="wrap-${p.id}">
         <div class="product-item">
           <img src="${p.image_url}" alt="${p.name}" onerror="this.src=''" />
           <div class="product-item__info">
@@ -610,23 +638,69 @@
               ${p.name}
               ${!p.activo ? '<span class="badge-inactivo">Inactivo</span>' : ''}
             </div>
-            <div class="product-item__meta">${p.cat}${p.sub ? ' · ' + p.sub : ''} · ${imgs.length} foto${imgs.length !== 1 ? 's' : ''}</div>
+            <div class="product-item__meta" id="meta-${p.id}">${p.cat}${p.sub ? ' · ' + p.sub : ''} · ${imgs.length} foto${imgs.length !== 1 ? 's' : ''}</div>
           </div>
-          <div class="product-item__price">$${p.price.toLocaleString("es-AR")}</div>
+          <div class="product-item__price" id="price-display-${p.id}">$${p.price.toLocaleString("es-AR")}</div>
           <div class="product-item__actions">
-            <button class="btn btn--ghost btn--sm" onclick="editPrice(${p.id}, ${p.price})">✏️ Precio</button>
+            <button class="btn btn--ghost btn--sm" onclick="toggleEditPanel(${p.id})">✏️ Editar</button>
             <button class="btn btn--ghost btn--sm" onclick="toggleImgPanel(${p.id})">📸 Fotos</button>
             <button class="btn btn--ghost btn--sm" onclick="toggleActivo(${p.id}, ${p.activo})">${p.activo ? '🙈 Ocultar' : '👁 Mostrar'}</button>
-            <button class="btn btn--danger btn--sm" onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')">🗑</button>
+            <button class="btn btn--danger btn--sm" onclick="deleteProduct(${p.id}, '${safeName}')">🗑</button>
           </div>
         </div>
 
-        <!-- Panel inline de imágenes -->
-        <div id="img-panel-${p.id}" class="img-panel" style="display:none">
-          <p class="img-panel__label">Fotos actuales (${imgs.length}):</p>
-          <div class="img-panel__thumbs" id="thumbs-${p.id}">${thumbsHtml || '<span style="color:#aaa;font-size:13px">Sin imágenes</span>'}</div>
+        <!-- Panel inline de EDICIÓN -->
+        <div id="edit-panel-${p.id}" class="edit-panel" style="display:none">
+          <div class="edit-panel__grid">
+            <div class="form-group full">
+              <label>Nombre</label>
+              <input type="text" id="edit-name-${p.id}" value="${p.name.replace(/"/g, '&quot;')}" />
+            </div>
+            <div class="form-group">
+              <label>Precio (ARS)</label>
+              <input type="number" id="edit-price-${p.id}" value="${p.price}" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="edit-cat-${p.id}">
+                <option value="">— Elegir —</option>
+                <option value="indumentaria" ${p.cat==='indumentaria'?'selected':''}>Indumentaria</option>
+                <option value="maquillaje" ${p.cat==='maquillaje'?'selected':''}>Maquillaje</option>
+                <option value="skincare" ${p.cat==='skincare'?'selected':''}>Skincare</option>
+                <option value="tazas" ${p.cat==='tazas'?'selected':''}>Tazas</option>
+                <option value="botellas-y-vasos" ${p.cat==='botellas-y-vasos'?'selected':''}>Botellas y vasos</option>
+                <option value="regaleria" ${p.cat==='regaleria'?'selected':''}>Regalería</option>
+                <option value="portacosmeticos" ${p.cat==='portacosmeticos'?'selected':''}>Portacosméticos</option>
+                <option value="marroquineria" ${p.cat==='marroquineria'?'selected':''}>Marroquinería</option>
+                <option value="accesorios" ${p.cat==='accesorios'?'selected':''}>Accesorios</option>
+                <option value="giftcards" ${p.cat==='giftcards'?'selected':''}>🎁 Gift Cards</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Subcategoría</label>
+              <select id="edit-sub-${p.id}">
+                <option value="">— Ninguna —</option>
+                <option value="superior" ${p.sub==='superior'?'selected':''}>Superior</option>
+                <option value="inferior" ${p.sub==='inferior'?'selected':''}>Inferior</option>
+                <option value="botellas" ${p.sub==='botellas'?'selected':''}>Botellas</option>
+                <option value="vasos" ${p.sub==='vasos'?'selected':''}>Vasos</option>
+                <option value="accesorios" ${p.sub==='accesorios'?'selected':''}>Accesorios</option>
+              </select>
+            </div>
+          </div>
+          <div class="edit-panel__actions">
+            <button class="btn btn--primary btn--sm" id="btn-save-edit-${p.id}" onclick="saveEdit(${p.id})">Guardar cambios</button>
+            <button class="btn btn--ghost btn--sm" onclick="toggleEditPanel(${p.id})">Cancelar</button>
+            <span class="img-panel__status" id="edit-status-${p.id}"></span>
+          </div>
+        </div>
 
-          <p class="img-panel__label" style="margin-top:4px">Agregar más fotos:</p>
+        <!-- Panel inline de FOTOS -->
+        <div id="img-panel-${p.id}" class="img-panel" style="display:none">
+          <p class="img-panel__label">Fotos actuales (${imgs.length}) — tocá × para eliminar una:</p>
+          <div class="img-panel__thumbs" id="thumbs-${p.id}">${renderThumbs(p.id, imgs)}</div>
+
+          <p class="img-panel__label" style="margin-top:12px">Agregar más fotos:</p>
           <input type="file" id="img-input-${p.id}" accept="image/*" multiple style="display:none"
                  onchange="previewNewImgs(${p.id}, this)" />
           <div class="upload-zone" style="padding:14px" onclick="document.getElementById('img-input-${p.id}').click()">
@@ -636,9 +710,9 @@
 
           <div class="img-panel__actions">
             <button class="btn btn--primary btn--sm" id="btn-save-imgs-${p.id}" onclick="saveNewImages(${p.id})">
-              Guardar fotos
+              Guardar fotos nuevas
             </button>
-            <button class="btn btn--ghost btn--sm" onclick="toggleImgPanel(${p.id})">Cancelar</button>
+            <button class="btn btn--ghost btn--sm" onclick="toggleImgPanel(${p.id})">Cerrar</button>
             <span class="img-panel__status" id="img-status-${p.id}"></span>
           </div>
         </div>
@@ -646,22 +720,125 @@
     }).join("");
   }
 
-  // ---- EDITAR PRECIO ----
-  async function editPrice(id, currentPrice) {
-    const newPrice = prompt(`Nuevo precio para el producto (actual: $${currentPrice.toLocaleString("es-AR")})`);
-    if (!newPrice || isNaN(newPrice)) return;
+  // ---- RENDER THUMBS CON BOTÓN × ----
+  function renderThumbs(id, imgs) {
+    if (!imgs || !imgs.length) return '<span style="color:#aaa;font-size:13px">Sin imágenes</span>';
+    return imgs.map((url, i) => `
+      <div class="img-panel__thumb-wrap">
+        <img src="${url}" class="img-panel__thumb" onerror="this.style.display='none'" />
+        ${i === 0 ? '<span class="img-panel__badge">Principal</span>' : ''}
+        <button class="img-panel__thumb-del" title="Eliminar esta foto" onclick="deleteImage(${id}, '${encodeURIComponent(url)}')">×</button>
+      </div>`).join("");
+  }
 
-    await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
-      method: "PATCH",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ price: parseInt(newPrice) })
-    });
+  // ---- ELIMINAR FOTO INDIVIDUAL ----
+  async function deleteImage(id, encodedUrl) {
+    const url = decodeURIComponent(encodedUrl);
+    if (!confirm("¿Eliminás esta foto del producto?")) return;
 
-    loadProducts();
+    const status = document.getElementById(`img-status-${id}`);
+    if (status) status.textContent = "Eliminando...";
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}&select=images,image_url`, {
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+      });
+      const [prod] = await res.json();
+      let imgs = (prod.images && prod.images.length) ? [...prod.images] : (prod.image_url ? [prod.image_url] : []);
+      imgs = imgs.filter(u => u !== url);
+
+      const patch = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+        method: "PATCH",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({ images: imgs, image_url: imgs[0] || "" })
+      });
+
+      if (!patch.ok) throw new Error("Error al guardar");
+
+      // Actualizar thumbs en el panel sin recargar todo
+      const thumbsEl = document.getElementById(`thumbs-${id}`);
+      if (thumbsEl) thumbsEl.innerHTML = renderThumbs(id, imgs);
+      if (status) status.textContent = `✓ Foto eliminada`;
+
+      // Actualizar imagen del producto-item
+      const itemImg = document.querySelector(`#wrap-${id} .product-item > img`);
+      if (itemImg) itemImg.src = imgs[0] || "";
+
+    } catch (e) {
+      if (status) { status.textContent = "Error: " + e.message; status.style.color = "#c0392b"; }
+    }
+  }
+
+  // ---- TOGGLE PANEL DE EDICIÓN ----
+  function toggleEditPanel(id) {
+    const panel = document.getElementById(`edit-panel-${id}`);
+    if (!panel) return;
+    const isOpen = panel.style.display !== "none";
+    // Cerrar el otro panel si está abierto
+    const imgPanel = document.getElementById(`img-panel-${id}`);
+    if (imgPanel) imgPanel.style.display = "none";
+    panel.style.display = isOpen ? "none" : "block";
+    // Limpiar status
+    const st = document.getElementById(`edit-status-${id}`);
+    if (st) { st.textContent = ""; st.style.color = "#065f46"; }
+  }
+
+  // ---- GUARDAR EDICIÓN ----
+  async function saveEdit(id) {
+    const name  = document.getElementById(`edit-name-${id}`).value.trim();
+    const price = parseInt(document.getElementById(`edit-price-${id}`).value);
+    const cat   = document.getElementById(`edit-cat-${id}`).value;
+    const sub   = document.getElementById(`edit-sub-${id}`).value;
+    const status = document.getElementById(`edit-status-${id}`);
+
+    if (!name || isNaN(price) || price < 0 || !cat) {
+      if (status) { status.textContent = "Completá nombre, precio y categoría"; status.style.color = "#c0392b"; }
+      return;
+    }
+
+    const btn = document.getElementById(`btn-save-edit-${id}`);
+    btn.disabled = true; btn.textContent = "Guardando...";
+    if (status) status.textContent = "";
+
+    try {
+      const patch = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+        method: "PATCH",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({ name, price, cat, sub })
+      });
+
+      if (!patch.ok) throw new Error("Error al guardar");
+
+      // Actualizar UI sin recargar todo
+      const nameEl = document.querySelector(`#wrap-${id} .product-item__name`);
+      if (nameEl) nameEl.childNodes[0].textContent = name + " ";
+      const metaEl = document.getElementById(`meta-${id}`);
+      if (metaEl) {
+        const parts = metaEl.textContent.split("·");
+        const fotos = parts[parts.length - 1].trim();
+        metaEl.textContent = `${cat}${sub ? ' · ' + sub : ''} · ${fotos}`;
+      }
+      const priceEl = document.getElementById(`price-display-${id}`);
+      if (priceEl) priceEl.textContent = "$" + price.toLocaleString("es-AR");
+
+      if (status) { status.textContent = "✓ Guardado"; status.style.color = "#065f46"; }
+      setTimeout(() => toggleEditPanel(id), 1200);
+
+    } catch (e) {
+      if (status) { status.textContent = "Error: " + e.message; status.style.color = "#c0392b"; }
+    } finally {
+      btn.disabled = false; btn.textContent = "Guardar cambios";
+    }
   }
 
   // ---- TOGGLE ACTIVO ----
@@ -798,13 +975,7 @@
 
       // Refrescar solo los thumbs del panel sin recargar toda la lista
       const thumbsContainer = document.getElementById(`thumbs-${id}`);
-      if (thumbsContainer) {
-        thumbsContainer.innerHTML = allImages.map((url, i) => `
-          <div class="img-panel__thumb-wrap">
-            <img src="${url}" class="img-panel__thumb" onerror="this.style.display='none'" />
-            ${i === 0 ? '<span class="img-panel__badge">Principal</span>' : ''}
-          </div>`).join("");
-      }
+      if (thumbsContainer) thumbsContainer.innerHTML = renderThumbs(id, allImages);
 
       // Actualizar el contador en la meta
       const meta = document.querySelector(`#img-panel-${id}`)?.previousElementSibling?.querySelector(".product-item__meta");
