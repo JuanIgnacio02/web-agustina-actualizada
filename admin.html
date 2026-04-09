@@ -352,6 +352,27 @@
     }
     .img-panel__thumb-del:hover { background: #a93226; }
 
+    /* ---- TOOLBAR BÚSQUEDA ---- */
+    .list-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .list-toolbar input {
+      flex: 1;
+      min-width: 180px;
+    }
+    .list-toolbar select {
+      width: auto;
+    }
+    .list-count {
+      font-size: 13px;
+      color: #aaa;
+      white-space: nowrap;
+    }
+
     /* ---- UPLOAD ---- */
     .upload-zone {
       border: 2px dashed #e0c8d4;
@@ -476,7 +497,31 @@
 
     <!-- TAB: LISTA -->
     <div class="tab-panel" id="tab-lista">
-      <p class="section-title">Productos cargados</p>
+
+      <!-- Barra de búsqueda y filtros -->
+      <div class="list-toolbar">
+        <input type="text" id="search-input" placeholder="🔍 Buscar por nombre..." oninput="filterList()" />
+        <select id="filter-cat" onchange="filterList()">
+          <option value="">Todas las categorías</option>
+          <option value="indumentaria">Indumentaria</option>
+          <option value="maquillaje">Maquillaje</option>
+          <option value="skincare">Skincare</option>
+          <option value="necesers">Necesers</option>
+          <option value="marroquineria">Marroquinería</option>
+          <option value="regaleria">Regalería</option>
+          <option value="tazas">Tazas</option>
+          <option value="botellas-y-vasos">Botellas y vasos</option>
+          <option value="accesorios">Accesorios</option>
+          <option value="giftcards">🎁 Gift Cards</option>
+        </select>
+        <select id="filter-estado" onchange="filterList()">
+          <option value="">Todos</option>
+          <option value="activo">Activos</option>
+          <option value="inactivo">Inactivos</option>
+        </select>
+        <span id="list-count" class="list-count"></span>
+      </div>
+
       <div id="product-list" class="product-list">
         <div class="loading">Cargando...</div>
       </div>
@@ -619,6 +664,8 @@
   }
 
   // ---- CARGAR LISTA ----
+  let allProducts = []; // cache en memoria
+
   async function loadProducts() {
     const list = document.getElementById("product-list");
     list.innerHTML = `<div class="loading">Cargando...</div>`;
@@ -626,14 +673,43 @@
     const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?order=created_at.desc`, {
       headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
     });
+    allProducts = await res.json();
 
-    const products = await res.json();
+    // Resetear filtros
+    const si = document.getElementById("search-input");
+    const fc = document.getElementById("filter-cat");
+    const fe = document.getElementById("filter-estado");
+    if (si) si.value = "";
+    if (fc) fc.value = "";
+    if (fe) fe.value = "";
 
+    filterList();
+  }
+
+  function filterList() {
+    const query  = document.getElementById("search-input")?.value.toLowerCase().trim() || "";
+    const cat    = document.getElementById("filter-cat")?.value || "";
+    const estado = document.getElementById("filter-estado")?.value || "";
+
+    const filtered = allProducts.filter(p => {
+      const matchName   = !query  || p.name.toLowerCase().includes(query);
+      const matchCat    = !cat    || p.cat === cat;
+      const matchEstado = !estado || (estado === "activo" ? p.activo : !p.activo);
+      return matchName && matchCat && matchEstado;
+    });
+
+    const countEl = document.getElementById("list-count");
+    if (countEl) countEl.textContent = `${filtered.length} producto${filtered.length !== 1 ? "s" : ""}`;
+
+    renderList(filtered);
+  }
+
+  function renderList(products) {
+    const list = document.getElementById("product-list");
     if (!products.length) {
-      list.innerHTML = `<div class="loading">Todavía no hay productos cargados.</div>`;
+      list.innerHTML = `<div class="loading">Sin resultados.</div>`;
       return;
     }
-
     list.innerHTML = products.map(p => {
       const imgs = p.images && p.images.length ? p.images : (p.image_url ? [p.image_url] : []);
       const safeName = p.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
@@ -869,8 +945,25 @@
       },
       body: JSON.stringify({ activo: !currentActivo })
     });
-
-    loadProducts();
+    // Actualizar cache y re-filtrar sin recargar todo
+    const p = allProducts.find(x => x.id === id);
+    if (p) p.activo = !currentActivo;
+    filterList();
+    // Refrescar solo el badge visual del item
+    const nameEl = document.querySelector(`#wrap-${id} .product-item__name`);
+    if (nameEl) {
+      const badge = nameEl.querySelector(".badge-inactivo");
+      if (!currentActivo && badge) badge.remove();
+      else if (currentActivo && !badge) {
+        const b = document.createElement("span");
+        b.className = "badge-inactivo"; b.textContent = "Inactivo";
+        nameEl.appendChild(b);
+      }
+    }
+    // Cambiar texto del botón
+    const btn = document.querySelector(`#wrap-${id} .product-item__actions .btn--ghost:nth-child(3)`);
+    if (btn) btn.textContent = !currentActivo ? "🙈 Ocultar" : "👁 Mostrar";
+    btn?.setAttribute("onclick", `toggleActivo(${id}, ${!currentActivo})`);
   }
 
   // ---- ELIMINAR ----
@@ -884,8 +977,14 @@
         "Authorization": `Bearer ${SUPABASE_KEY}`
       }
     });
-
-    loadProducts();
+    // Quitar del cache y del DOM
+    allProducts = allProducts.filter(x => x.id !== id);
+    document.getElementById(`wrap-${id}`)?.remove();
+    const countEl = document.getElementById("list-count");
+    if (countEl) {
+      const visible = document.querySelectorAll(".product-item-wrap").length;
+      countEl.textContent = `${visible} producto${visible !== 1 ? "s" : ""}`;
+    }
   }
 
   // ---- HELPERS ----
