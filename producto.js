@@ -20,13 +20,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!product) { showEmpty(); return; }
 
-  const name        = product.name        || "Producto";
-  const price       = Number(product.price || 0);
-  const image       = product.image_url   || "";
-  const cat         = product.cat         || "";
-  const sub         = product.sub         || "";
-  const description = product.description || "";
-  const images      = (product.images && product.images.length) ? product.images : [image].filter(Boolean);
+  const name           = product.name           || "Producto";
+  const price          = Number(product.price   || 0);
+  const precioEfectivo = Number(product.precio_efectivo || 0);
+  const image          = product.image_url      || "";
+  const cat            = product.cat            || "";
+  const sub            = product.sub            || "";
+  const description    = product.description    || "";
+  const images         = (product.images && product.images.length) ? product.images : [image].filter(Boolean);
 
   // Título pestaña
   document.title = `${name} • AGUSTINA`;
@@ -39,6 +40,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Nombre y precio
   document.getElementById("prdName").textContent  = name;
   document.getElementById("prdPrice").textContent = "$" + price.toLocaleString("es-AR");
+
+  // Precio efectivo (opcional)
+  if (precioEfectivo > 0) {
+    document.getElementById("prdPriceEfectivo").style.display = "block";
+    document.getElementById("prdPriceEfectivoVal").textContent = "$" + precioEfectivo.toLocaleString("es-AR");
+  }
 
   // Breadcrumbs
   const catLabel = prettify(cat);

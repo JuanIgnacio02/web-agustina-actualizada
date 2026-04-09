@@ -429,7 +429,7 @@
               <option value="tazas">Tazas</option>
               <option value="botellas-y-vasos">Botellas y vasos</option>
               <option value="regaleria">Regalería</option>
-              <option value="portacosmeticos">Portacosméticos</option>
+              <option value="necesers">Necesers</option>
               <option value="marroquineria">Marroquinería</option>
               <option value="accesorios">Accesorios</option>
               <option value="giftcards">🎁 Gift Cards</option>
@@ -439,13 +439,17 @@
           <div class="form-group">
             <label>Subcategoría</label>
             <select id="f-sub">
-              <option value="">— Elegir —</option>
-              <option value="superior">Superior</option>
-              <option value="inferior">Inferior</option>
-              <option value="botellas">Botellas</option>
-              <option value="vasos">Vasos</option>
+              <option value="">— Ninguna —</option>
+              <option value="tazas">Tazas</option>
+              <option value="botellas-y-vasos">Botellas y vasos</option>
+              <option value="libreria">Librería</option>
               <option value="accesorios">Accesorios</option>
             </select>
+          </div>
+
+          <div class="form-group">
+            <label>Precio en efectivo (ARS) <span style="color:#aaa;font-weight:400">— opcional</span></label>
+            <input type="number" id="f-price-efectivo" placeholder="Ej: 8500" min="0" />
           </div>
 
           <div class="form-group full">
@@ -572,6 +576,8 @@
     const price = parseInt(document.getElementById("f-price").value);
     const cat = document.getElementById("f-cat").value;
     const sub = document.getElementById("f-sub").value;
+    const precioEfectivoRaw = document.getElementById("f-price-efectivo").value;
+    const precio_efectivo = precioEfectivoRaw ? parseInt(precioEfectivoRaw) : null;
     if (!name || !price || !cat || !selectedFiles.length) {
       showMsg("err", "Completá nombre, precio, categoría e imagen");
       return;
@@ -593,7 +599,7 @@
           "Authorization": `Bearer ${SUPABASE_KEY}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name, price, image_url: imageUrl, images, cat, sub })
+        body: JSON.stringify({ name, price, image_url: imageUrl, images, cat, sub, precio_efectivo })
       });
 
       if (!res.ok) throw new Error((await res.json()).error || "Error al guardar");
@@ -670,7 +676,7 @@
                 <option value="tazas" ${p.cat==='tazas'?'selected':''}>Tazas</option>
                 <option value="botellas-y-vasos" ${p.cat==='botellas-y-vasos'?'selected':''}>Botellas y vasos</option>
                 <option value="regaleria" ${p.cat==='regaleria'?'selected':''}>Regalería</option>
-                <option value="portacosmeticos" ${p.cat==='portacosmeticos'?'selected':''}>Portacosméticos</option>
+                <option value="necesers" ${p.cat==='necesers'||p.cat==='portacosmeticos'?'selected':''}>Necesers</option>
                 <option value="marroquineria" ${p.cat==='marroquineria'?'selected':''}>Marroquinería</option>
                 <option value="accesorios" ${p.cat==='accesorios'?'selected':''}>Accesorios</option>
                 <option value="giftcards" ${p.cat==='giftcards'?'selected':''}>🎁 Gift Cards</option>
@@ -680,12 +686,15 @@
               <label>Subcategoría</label>
               <select id="edit-sub-${p.id}">
                 <option value="">— Ninguna —</option>
-                <option value="superior" ${p.sub==='superior'?'selected':''}>Superior</option>
-                <option value="inferior" ${p.sub==='inferior'?'selected':''}>Inferior</option>
-                <option value="botellas" ${p.sub==='botellas'?'selected':''}>Botellas</option>
-                <option value="vasos" ${p.sub==='vasos'?'selected':''}>Vasos</option>
+                <option value="tazas" ${p.sub==='tazas'?'selected':''}>Tazas</option>
+                <option value="botellas-y-vasos" ${p.sub==='botellas-y-vasos'?'selected':''}>Botellas y vasos</option>
+                <option value="libreria" ${p.sub==='libreria'?'selected':''}>Librería</option>
                 <option value="accesorios" ${p.sub==='accesorios'?'selected':''}>Accesorios</option>
               </select>
+            </div>
+            <div class="form-group">
+              <label>Precio en efectivo (ARS) <span style="color:#aaa;font-weight:400">— opcional</span></label>
+              <input type="number" id="edit-precio-efectivo-${p.id}" value="${p.precio_efectivo || ''}" placeholder="Ej: 8500" min="0" />
             </div>
           </div>
           <div class="edit-panel__actions">
@@ -794,6 +803,8 @@
     const price = parseInt(document.getElementById(`edit-price-${id}`).value);
     const cat   = document.getElementById(`edit-cat-${id}`).value;
     const sub   = document.getElementById(`edit-sub-${id}`).value;
+    const peRaw = document.getElementById(`edit-precio-efectivo-${id}`).value;
+    const precio_efectivo = peRaw ? parseInt(peRaw) : null;
     const status = document.getElementById(`edit-status-${id}`);
 
     if (!name || isNaN(price) || price < 0 || !cat) {
@@ -814,7 +825,7 @@
           "Content-Type": "application/json",
           "Prefer": "return=minimal"
         },
-        body: JSON.stringify({ name, price, cat, sub })
+        body: JSON.stringify({ name, price, cat, sub, precio_efectivo })
       });
 
       if (!patch.ok) throw new Error("Error al guardar");
