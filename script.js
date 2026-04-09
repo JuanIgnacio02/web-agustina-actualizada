@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── Fetch productos ─────────────────────────────────
   async function fetchProducts() {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/productos?activo=eq.true&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/productos?activo=eq.true&order=created_at.desc&select=id,name,price,cat,sub,image_url,images`,
       { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } }
     );
     if (!res.ok) return [];
