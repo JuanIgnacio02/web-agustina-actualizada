@@ -126,7 +126,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     mSheet?.removeAttribute("aria-hidden");
     filterBackdrop?.classList.add("is-open");
     filterBurger?.setAttribute("aria-expanded", "true");
-    document.body.style.overflow = "hidden";
+    // Fix scroll iOS
+    const sy = window.scrollY;
+    document.body.dataset.scrollY = sy;
+    document.body.style.overflow  = "hidden";
+    document.body.style.position  = "fixed";
+    document.body.style.top       = `-${sy}px`;
+    document.body.style.width     = "100%";
   }
 
   function closeSheet() {
@@ -134,7 +140,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     mSheet?.setAttribute("aria-hidden", "true");
     filterBackdrop?.classList.remove("is-open");
     filterBurger?.setAttribute("aria-expanded", "false");
-    document.body.style.overflow = "";
+    const sy = parseInt(document.body.dataset.scrollY || "0");
+    document.body.style.overflow  = "";
+    document.body.style.position  = "";
+    document.body.style.top       = "";
+    document.body.style.width     = "";
+    window.scrollTo(0, sy);
   }
 
   if (filterBurger) {

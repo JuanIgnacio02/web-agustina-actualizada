@@ -66,18 +66,37 @@
     el._t = setTimeout(() => el.classList.remove("is-visible"), 2400);
   }
 
+  // ── Bloqueo de scroll del body (fix iOS) ─────────────
+  let _scrollY = 0;
+
+  function lockBodyScroll() {
+    _scrollY = window.scrollY;
+    document.body.style.overflow   = "hidden";
+    document.body.style.position   = "fixed";
+    document.body.style.top        = `-${_scrollY}px`;
+    document.body.style.width      = "100%";
+  }
+
+  function unlockBodyScroll() {
+    document.body.style.overflow  = "";
+    document.body.style.position  = "";
+    document.body.style.top       = "";
+    document.body.style.width     = "";
+    window.scrollTo(0, _scrollY);
+  }
+
   // ── Panel ────────────────────────────────────────────
   function openPanel() {
     renderBody();
     document.getElementById("cartPanel")?.classList.add("is-open");
     document.getElementById("cartOverlay")?.classList.add("is-open");
-    document.body.style.overflow = "hidden";
+    lockBodyScroll();
   }
 
   function closePanel() {
     document.getElementById("cartPanel")?.classList.remove("is-open");
     document.getElementById("cartOverlay")?.classList.remove("is-open");
-    document.body.style.overflow = "";
+    unlockBodyScroll();
   }
 
   function renderBody() {
