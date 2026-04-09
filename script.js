@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const sectionTitle     = document.getElementById("section-title");
   const yearEl           = document.getElementById("year");
   const chips            = document.getElementById("catalogoChips");
-  const chipGroup        = document.querySelector(".chip-group");
+  const chipGroups       = document.querySelectorAll(".chip-group");
+  const chipGroup        = chipGroups[0]; // legacy compat
   const header           = document.querySelector(".header");
   const filterBurger     = document.getElementById("filterBurger");
   const filterBurgerBadge = document.getElementById("filterBurgerActive");
@@ -38,40 +39,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!mSheetList || !chips) return;
     mSheetList.innerHTML = "";
 
-    chips.querySelectorAll("[data-filter]").forEach((btn, i) => {
-      // Separador visual antes del primer subchip de Indumentaria
-      if (btn.closest(".chip-sub") && i === 0) return; // lo manejamos abajo
+    chips.querySelectorAll("[data-filter]").forEach(btn => {
+      // Los sub-items se agregan cuando procesamos el chip-parent, no aquí
+      if (btn.closest(".chip-sub")) return;
 
       const item = document.createElement("button");
       item.className = "m-sheet-item";
       item.dataset.filter = btn.dataset.filter;
       item.dataset.value  = btn.dataset.value;
 
-      const isSubItem = !!btn.closest(".chip-sub");
       const label = btn.textContent.replace("▾","").trim();
       item.innerHTML = `
-        <span style="${isSubItem ? "padding-left:14px;color:#666;font-size:14px;" : ""}">${label}</span>
+        <span>${label}</span>
         <span class="m-sheet-item__check"></span>
       `;
 
-      if (btn.dataset.value === activeFilter.value) {
-        item.classList.add("is-active");
-      }
+      if (btn.dataset.value === activeFilter.value) item.classList.add("is-active");
 
       item.addEventListener("click", () => {
-        const type  = item.dataset.filter;
-        const value = item.dataset.value;
-        applyFilter(type, value, label);
+        applyFilter(item.dataset.filter, item.dataset.value, label);
         setTimeout(() => closeSheet(), 180);
       });
 
       mSheetList.appendChild(item);
 
-      // Si es el grupo Indumentaria, añadir sus sub-items inmediatamente
+      // Si es chip-parent, agregar sus sub-items indentados debajo
       if (btn.classList.contains("chip-parent")) {
-        const divider = document.createElement("div");
-        divider.className = "m-sheet-divider";
-        // mSheetList.appendChild(divider); // solo si hay subcats
         btn.closest(".chip-group")?.querySelectorAll(".chip-sub .chip").forEach(sub => {
           const subItem = document.createElement("button");
           subItem.className = "m-sheet-item";
@@ -79,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           subItem.dataset.value  = sub.dataset.value;
           const subLabel = sub.textContent.trim();
           subItem.innerHTML = `
-            <span style="padding-left:18px;color:#888;font-size:14px;">${subLabel}</span>
+            <span style="padding-left:18px;color:#888;font-size:14px;">↳ ${subLabel}</span>
             <span class="m-sheet-item__check"></span>
           `;
           if (sub.dataset.value === activeFilter.value) subItem.classList.add("is-active");
@@ -89,7 +82,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
           mSheetList.appendChild(subItem);
         });
-        mSheetList.appendChild(divider);
       }
     });
   }
@@ -157,16 +149,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, { passive: true });
   }
 
-  // ── Submenú Indumentaria desktop (click) ────────────
-  if (chipGroup) {
-    const parentChip = chipGroup.querySelector(".chip-parent");
-    const subMenu    = chipGroup.querySelector(".chip-sub");
-    if (parentChip) parentChip.addEventListener("click", () => chipGroup.classList.toggle("open"));
-    if (subMenu)    subMenu.addEventListener("click",    () => chipGroup.classList.remove("open"));
-    document.addEventListener("click", (e) => {
-      if (!isMobile() && !chipGroup.contains(e.target)) chipGroup.classList.remove("open");
+  // ── Submenús desktop (click) — soporta múltiples chip-groups ──
+  chipGroups.forEach(group => {
+    const parentChip = group.querySelector(".chip-parent");
+    const subMenu    = group.querySelector(".chip-sub");
+    if (parentChip) parentChip.addEventListener("click", (e) => {
+      // Cerrar otros grupos abiertos
+      chipGroups.forEach(g => { if (g !== group) g.classList.remove("open"); });
+      group.classList.toggle("open");
     });
-  }
+    if (subMenu) subMenu.addEventListener("click", () => group.classList.remove("open"));
+  });
+  document.addEventListener("click", (e) => {
+    if (!isMobile()) {
+      chipGroups.forEach(g => { if (!g.contains(e.target)) g.classList.remove("open"); });
+    }
+  });
 
   // ── Header shrink on scroll ─────────────────────────
   function setHeaderH() {
