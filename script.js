@@ -240,8 +240,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             `<span class="card__dot${i === 0 ? " is-active" : ""}"></span>`).join("")}</div>`
         : "";
 
-      const imgEncoded = encodeURIComponent(allImgs[0] || "");
+      const imgEncoded  = encodeURIComponent(allImgs[0] || "");
       const nameEncoded = encodeURIComponent(p.name);
+      const hasSecond   = allImgs.length > 1;
+
+      // Líneas indicadoras (estilo premium) — solo si hay 3+ imágenes
+      const lines = allImgs.length >= 3
+        ? `<div class="card__lines">${allImgs.map((_, i) =>
+            `<span class="card__line${i === 0 ? " is-active" : ""}"></span>`).join("")}</div>`
+        : "";
 
       return `
         <article class="card product-link"
@@ -249,8 +256,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           data-images="${encodeURIComponent(JSON.stringify(allImgs))}">
           <div class="card__media">
             ${isNew ? '<span class="card__badge">NUEVO</span>' : ""}
-            <img src="${allImgs[0] || ""}" class="card__img" alt="${p.name}">
-            ${dots}
+            <img src="${allImgs[0] || ""}" class="card__img card__img--primary" alt="${p.name}">
+            ${hasSecond ? `<img src="${allImgs[1]}" class="card__img card__img--secondary" alt="${p.name}" loading="lazy">` : ""}
+            ${lines}
             <button class="card__add-btn"
               data-cart-id="${p.id}"
               data-cart-name="${nameEncoded}"
@@ -277,40 +285,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     attachImageCycle();
   }
 
-  // ── Image cycling en hover ──────────────────────────
+  // ── Image cycling en hover (solo 3+ imágenes, CSS maneja el caso de 2) ──
   function attachImageCycle() {
     document.querySelectorAll(".product-link").forEach(card => {
       const allImgs = JSON.parse(decodeURIComponent(card.dataset.images || "[]"));
-      if (allImgs.length <= 1) return;
+      if (allImgs.length < 3) return; // 2 imágenes: lo resuelve CSS con cross-fade
 
-      const imgEl = card.querySelector(".card__img");
-      const dots  = card.querySelectorAll(".card__dot");
+      const secondary = card.querySelector(".card__img--secondary");
+      const lines     = card.querySelectorAll(".card__line");
       let timer = null;
-      let idx = 0;
+      let idx = 1; // arranca en la segunda (índice 1)
 
       function showImg(i) {
         idx = i;
-        imgEl.style.opacity = "0";
-        setTimeout(() => {
-          imgEl.src = allImgs[idx];
-          imgEl.style.opacity = "1";
-        }, 120);
-        dots.forEach((d, j) => d.classList.toggle("is-active", j === idx));
+        if (secondary) {
+          secondary.style.opacity = "0";
+          setTimeout(() => {
+            secondary.src = allImgs[idx];
+            secondary.style.opacity = "1";
+          }, 100);
+        }
+        lines.forEach((l, j) => l.classList.toggle("is-active", j === idx));
       }
 
       card.addEventListener("mouseenter", () => {
-        idx = 0;
+        idx = 1;
+        if (secondary) secondary.src = allImgs[1];
         clearInterval(timer);
-        timer = setInterval(() => showImg((idx + 1) % allImgs.length), 750);
+        timer = setInterval(() => showImg(idx + 1 >= allImgs.length ? 1 : idx + 1), 900);
       });
 
       card.addEventListener("mouseleave", () => {
         clearInterval(timer);
         timer = null;
-        idx = 0;
-        imgEl.style.opacity = "1";
-        imgEl.src = allImgs[0];
-        dots.forEach((d, j) => d.classList.toggle("is-active", j === 0));
+        lines.forEach((l, j) => l.classList.toggle("is-active", j === 0));
       });
     });
   }
