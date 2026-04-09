@@ -199,6 +199,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Si viene con ?cat=giftcards en la URL, filtrar directamente
   const urlCat = new URLSearchParams(window.location.search).get("cat");
   if (urlCat) {
+    // Limpiar la URL para que no persista al refrescar
+    history.replaceState(null, '', window.location.pathname);
     renderProducts({ type: "cat", value: urlCat });
     chips?.querySelectorAll(".chip").forEach(c => {
       c.classList.toggle("is-active", c.dataset.value === urlCat);
