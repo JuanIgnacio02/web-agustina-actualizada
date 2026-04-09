@@ -207,6 +207,90 @@
     }
     .prd-back2:hover { color: #333; background: white; }
 
+    /* ── Gift card amount selector ── */
+    .gc-amount {
+      margin-bottom: 22px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255,240,248,.8), rgba(255,255,255,.7));
+      border: 1px solid rgba(192,96,128,.18);
+      border-radius: 16px;
+    }
+    .gc-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+      margin: 0 0 12px;
+      letter-spacing: .02em;
+    }
+    .gc-presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .gc-preset {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(0,0,0,.1);
+      background: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .gc-preset:hover { border-color: #c06080; color: #c06080; }
+    .gc-preset.selected {
+      background: #c06080;
+      border-color: #c06080;
+      color: white;
+      font-weight: 600;
+    }
+    .gc-custom {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: white;
+      border: 1.5px solid rgba(0,0,0,.12);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color .18s;
+    }
+    .gc-custom:focus-within { border-color: #c06080; }
+    .gc-currency {
+      padding: 0 12px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #888;
+      background: #fafafa;
+      border-right: 1px solid rgba(0,0,0,.08);
+      height: 48px;
+      display: flex;
+      align-items: center;
+    }
+    .gc-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 0 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      height: 48px;
+      background: white;
+      -moz-appearance: textfield;
+    }
+    .gc-input::-webkit-outer-spin-button,
+    .gc-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .gc-hint {
+      font-size: 12px;
+      color: #bbb;
+      margin: 8px 0 0;
+    }
+
     /* empty state */
     .prd-empty {
       text-align: center;
@@ -273,6 +357,22 @@
           <div class="prd-price" id="prdPrice">$0</div>
 
           <div class="prd-pills" id="prdPills"></div>
+
+          <!-- Gift card: selector de monto (se muestra solo si cat=giftcards) -->
+          <div class="gc-amount" id="gcAmount" hidden>
+            <p class="gc-label">¿Cuánto querés regalar?</p>
+            <div class="gc-presets" id="gcPresets">
+              <button class="gc-preset" data-val="2000">$2.000</button>
+              <button class="gc-preset" data-val="5000">$5.000</button>
+              <button class="gc-preset" data-val="10000">$10.000</button>
+              <button class="gc-preset" data-val="20000">$20.000</button>
+            </div>
+            <div class="gc-custom">
+              <span class="gc-currency">$</span>
+              <input type="number" id="gcInput" class="gc-input" placeholder="Otro monto" min="1" step="1" />
+            </div>
+            <p class="gc-hint">Podés elegir una opción o escribir el monto que quieras</p>
+          </div>
 
           <!-- Descripción (solo si existe) -->
           <div class="prd-desc" id="prdDesc"></div>

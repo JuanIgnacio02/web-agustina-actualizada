@@ -58,16 +58,91 @@ document.addEventListener("DOMContentLoaded", async () => {
     descEl.style.display = "block";
   }
 
-  // WhatsApp directo (solo este producto)
-  const msg = `Hola Agustina! 👋 Quiero consultar por: *${name}*. ¿Está disponible?`;
-  document.getElementById("prdWA").href = `https://wa.me/5492604009647?text=${encodeURIComponent(msg)}`;
+  // ── Gift card: mostrar selector de monto si la categoría es giftcards ──
+  const isGiftCard = cat === "giftcards";
+  let gcSelectedAmount = 0;
 
-  // Botón "Agregar al carrito"
+  if (isGiftCard) {
+    // Mostrar bloque y ocultar precio fijo
+    document.getElementById("gcAmount").hidden = false;
+    document.getElementById("prdPrice").style.display = "none";
+
+    const presets = document.querySelectorAll(".gc-preset");
+    const gcInput = document.getElementById("gcInput");
+
+    // Click en preset
+    presets.forEach(btn => {
+      btn.addEventListener("click", () => {
+        presets.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        gcSelectedAmount = Number(btn.dataset.val);
+        gcInput.value = "";
+        updatePriceDisplay(gcSelectedAmount);
+      });
+    });
+
+    // Escritura libre
+    gcInput.addEventListener("input", () => {
+      presets.forEach(b => b.classList.remove("selected"));
+      const v = Number(gcInput.value);
+      gcSelectedAmount = v > 0 ? v : 0;
+      updatePriceDisplay(gcSelectedAmount);
+    });
+
+    function updatePriceDisplay(amount) {
+      const priceEl = document.getElementById("prdPrice");
+      if (amount > 0) {
+        priceEl.textContent = "$" + amount.toLocaleString("es-AR");
+        priceEl.style.display = "block";
+      } else {
+        priceEl.style.display = "none";
+      }
+    }
+  }
+
+  // ── WhatsApp directo (solo este producto) ──
+  function buildWAMsg() {
+    if (isGiftCard && gcSelectedAmount > 0) {
+      return `Hola Agustina! 👋 Quiero una *Gift Card por $${gcSelectedAmount.toLocaleString("es-AR")}*. ¿Cómo la gestiono?`;
+    }
+    return `Hola Agustina! 👋 Quiero consultar por: *${name}*. ¿Está disponible?`;
+  }
+
+  const waBtn = document.getElementById("prdWA");
+  waBtn.href = `https://wa.me/5492604009647?text=${encodeURIComponent(buildWAMsg())}`;
+  // Actualizar link WA cuando cambia el monto
+  if (isGiftCard) {
+    document.getElementById("gcAmount").addEventListener("input", () => {
+      waBtn.href = `https://wa.me/5492604009647?text=${encodeURIComponent(buildWAMsg())}`;
+    });
+    document.querySelectorAll(".gc-preset").forEach(btn => {
+      btn.addEventListener("click", () => {
+        waBtn.href = `https://wa.me/5492604009647?text=${encodeURIComponent(buildWAMsg())}`;
+      });
+    });
+  }
+
+  // ── Botón "Agregar al carrito" ──
   const cartBtn = document.getElementById("prdCartBtn");
   if (cartBtn) {
     cartBtn.addEventListener("click", () => {
+      // Validar monto si es gift card
+      if (isGiftCard && gcSelectedAmount <= 0) {
+        const gcInput = document.getElementById("gcInput");
+        gcInput.focus();
+        gcInput.style.outline = "2px solid #c06080";
+        setTimeout(() => gcInput.style.outline = "", 1500);
+        return;
+      }
+
       if (typeof cartAdd === "function") {
-        cartAdd({ id: String(product.id), name, price, image: images[0] || image, cat });
+        const finalPrice = isGiftCard ? gcSelectedAmount : price;
+        const finalName  = isGiftCard
+          ? `${name} — $${gcSelectedAmount.toLocaleString("es-AR")}`
+          : name;
+
+        cartAdd({ id: String(product.id) + (isGiftCard ? `-${gcSelectedAmount}` : ""), name: finalName, price: finalPrice, image: images[0] || image, cat });
+
         cartBtn.classList.add("added");
         cartBtn.innerHTML = `
           <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 10 8 14 16 6"/></svg>
