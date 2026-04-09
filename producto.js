@@ -1,82 +1,96 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const data = localStorage.getItem("productoSeleccionado");
+const SUPABASE_URL = "https://srqkahdyboqannrmkqmf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_C25BY4_efIwhRHoBqzYvgQ_MqMGmrI7";
 
-  const nameEl = document.getElementById("productName");
-  const priceEl = document.getElementById("productPrice");
-  const waEl = document.getElementById("productWhatsApp");
-  const crumbsEl = document.getElementById("productCrumbs");
-  const emptyEl = document.getElementById("productEmpty");
-  const pillCat = document.getElementById("pillCat");
-  const pillSub = document.getElementById("pillSub");
-  const galleryEl = document.getElementById("productGallery");
-  const mainImgEl = document.getElementById("productImage");
+document.addEventListener("DOMContentLoaded", async () => {
 
-  if (!data) {
-    emptyEl.hidden = false;
-    document.querySelector(".product__layout").style.display = "none";
-    return;
-  }
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (!id) { showEmpty(); return; }
 
   let product;
   try {
-    product = JSON.parse(data);
-  } catch (e) {
-    emptyEl.hidden = false;
-    document.querySelector(".product__layout").style.display = "none";
-    return;
-  }
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/productos?id=eq.${id}&limit=1`,
+      { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } }
+    );
+    const data = await res.json();
+    product = data[0];
+  } catch (e) { showEmpty(); return; }
 
-  const name = product?.name || "Producto";
-  const price = Number(product?.price || 0);
-  const image = product?.image || "";
-  const images = product?.images?.length ? product.images : [image];
-  const cat = product?.cat || "";
-  const sub = product?.sub || "";
+  if (!product) { showEmpty(); return; }
 
-  nameEl.textContent = name;
-  priceEl.textContent = "$" + price.toLocaleString("es-AR");
+  const name        = product.name        || "Producto";
+  const price       = Number(product.price || 0);
+  const image       = product.image_url   || "";
+  const cat         = product.cat         || "";
+  const sub         = product.sub         || "";
+  const description = product.description || "";
+  const images      = (product.images && product.images.length) ? product.images : [image].filter(Boolean);
 
-  mainImgEl.src = images[0];
-  mainImgEl.alt = name;
+  // Título pestaña
+  document.title = `${name} • AGUSTINA`;
 
-  if (images.length > 1 && galleryEl) {
-    galleryEl.innerHTML = images.map((url, i) => `
-      <img src="${url}" 
-           class="gallery__thumb${i === 0 ? " active" : ""}" 
-           alt="${name} ${i + 1}"
-           onclick="selectImg(this, '${url}')" />
-    `).join("");
-    galleryEl.style.display = "flex";
-  }
+  // Imagen
+  const imgEl = document.getElementById("prdImage");
+  imgEl.src = image;
+  imgEl.alt = name;
 
+  // Nombre y precio
+  document.getElementById("prdName").textContent  = name;
+  document.getElementById("prdPrice").textContent = "$" + price.toLocaleString("es-AR");
+
+  // Breadcrumbs
   const catLabel = prettify(cat);
   const subLabel = prettify(sub);
+  document.getElementById("prdCrumbs").textContent =
+    `Catálogo${catLabel ? " / " + catLabel : ""}${subLabel ? " / " + subLabel : ""}`;
 
-  if (catLabel) { pillCat.hidden = false; pillCat.textContent = catLabel; }
-  if (subLabel && subLabel !== catLabel) { pillSub.hidden = false; pillSub.textContent = subLabel; }
+  // Pills
+  const pillsEl = document.getElementById("prdPills");
+  if (catLabel) pillsEl.innerHTML += `<span class="prd-pill">${catLabel}</span>`;
+  if (subLabel && subLabel !== catLabel) pillsEl.innerHTML += `<span class="prd-pill">${subLabel}</span>`;
 
-  crumbsEl.textContent = `Catálogo${catLabel ? " / " + catLabel : ""}${subLabel ? " / " + subLabel : ""}`;
+  // Descripción
+  if (description) {
+    const descEl = document.getElementById("prdDesc");
+    descEl.textContent = description;
+    descEl.style.display = "block";
+  }
 
+  // WhatsApp
   const msg = `Hola! 👋 Quiero consultar por: ${name}. ¿Está disponible?`;
-  waEl.href = `https://wa.me/5492604002520?text=${encodeURIComponent(msg)}`;
+  document.getElementById("prdWA").href = `https://wa.me/5492604002520?text=${encodeURIComponent(msg)}`;
 
-  mainImgEl.addEventListener("error", () => {
-    mainImgEl.style.display = "none";
-    const wrap = document.querySelector(".product__imgwrap");
-    if (wrap) {
-      wrap.classList.add("is-error");
-      wrap.innerHTML = `<div class="product__imgfallback"><div class="product__imgicon">🖼️</div><div><strong>No se pudo cargar la imagen</strong></div></div>`;
-    }
+  // Galería thumbnails
+  const thumbsEl = document.getElementById("prdThumbs");
+
+  if (images.length > 1) {
+    images.forEach((url, i) => {
+      const thumb = document.createElement("img");
+      thumb.src = url;
+      thumb.className = "prd-thumb" + (i === 0 ? " active" : "");
+      thumb.addEventListener("click", () => {
+        imgEl.src = url;
+        thumbsEl.querySelectorAll(".prd-thumb").forEach(t => t.classList.remove("active"));
+        thumb.classList.add("active");
+      });
+      thumbsEl.appendChild(thumb);
+    });
+  }
+
+  // Error imagen
+  imgEl.addEventListener("error", () => {
+    imgEl.closest(".prd-imgwrap").style.minHeight = "200px";
   });
+
+  function showEmpty() {
+    document.getElementById("prdEmpty").hidden  = false;
+    document.getElementById("prdLayout").hidden = true;
+  }
 
   function prettify(str) {
     if (!str) return "";
-    return String(str).replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
+    return str.replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
   }
 });
-
-function selectImg(thumb, url) {
-  document.getElementById("productImage").src = url;
-  document.querySelectorAll(".gallery__thumb").forEach(t => t.classList.remove("active"));
-  thumb.classList.add("active");
-}
