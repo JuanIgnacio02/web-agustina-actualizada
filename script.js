@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 0) Supabase config
   // =========================
   const SUPABASE_URL = "https://srqkahdyboqannrmkqmf.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_C25BY4_efIwhRHoBqzYvgQ_MqMGmrI7";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNycWthaGR5Ym9xYW5ucm1rcW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MzE5NzYsImV4cCI6MjA5MTIwNzk3Nn0.AhedlrcW9bD_8JF2PvEvIaFsgJDF9ooCy9YdwULEMjk";
 
   async function fetchProducts() {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?activo=eq.true&order=created_at.desc`, {
@@ -20,10 +20,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       name: p.name,
       price: p.price,
       image: p.image_url,
+      images: p.images || [p.image_url],
       cat: p.cat,
-      sub: p.sub,
-      description: p.description || "",
-      created_at: p.created_at || ""
+      sub: p.sub
     }));
   }
 
@@ -43,29 +42,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const chipGroup = document.querySelector(".chip-group");
 
 if (chipGroup) {
-  const parentChip = chipGroup.querySelector(".chip-parent");
-  const subMenu    = chipGroup.querySelector(".chip-sub");
 
-  // Abrir/cerrar al hacer click en "Indumentaria"
-  if (parentChip) {
-    parentChip.addEventListener("click", () => {
-      chipGroup.classList.toggle("open");
-    });
-  }
-
-  // Cerrar cuando se elige una subcategoría
-  if (subMenu) {
-    subMenu.addEventListener("click", () => {
-      chipGroup.classList.remove("open");
-    });
-  }
-
-  // Cerrar si se hace click en cualquier otro lado
-  document.addEventListener("click", (e) => {
-    if (!chipGroup.contains(e.target)) {
-      chipGroup.classList.remove("open");
-    }
+  chipGroup.addEventListener("mouseenter", () => {
+    chipGroup.classList.add("open");
   });
+
+  chipGroup.addEventListener("mouseleave", () => {
+    chipGroup.classList.remove("open");
+  });
+
 }
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
@@ -127,41 +112,37 @@ if (chipGroup) {
     if (filter.type === "cat") list = products.filter((p) => p.cat === filter.value);
     if (filter.type === "sub") list = products.filter((p) => p.sub === filter.value);
 
-    if (list.length === 0) {
-      grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:3rem 1rem; color:#aaa; font-size:15px;">
-        Todavía no hay productos en esta categoría 🌸
-      </p>`;
-      return;
-    }
-
-    grid.innerHTML = list.map(p => {
-      const isNew = p.created_at
-        ? (Date.now() - new Date(p.created_at).getTime()) < 14 * 24 * 60 * 60 * 1000
-        : false;
-      const catLabel = (p.cat || "").replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
-      return `
+    grid.innerHTML = list.map(p => `
       <article class="card product-link"
-        data-id="${p.id}"
-        data-name="${p.name}"
-        data-image="${p.image}"
-        data-price="${p.price}"
-        data-cat="${p.cat}"
-        data-sub="${p.sub}"
-        data-description="${(p.description || "").replace(/"/g, '&quot;')}">
+      data-name="${p.name}"
+      data-image="${p.image}"
+      data-images="${encodeURIComponent(JSON.stringify(p.images || [p.image]))}"
+      data-price="${p.price}"
+      data-cat="${p.cat}"
+      data-sub="${p.sub}">
 
-        <div class="card__media">
-          ${isNew ? '<span class="card__badge">NUEVO</span>' : ''}
-          <img src="${p.image}" class="card__img" alt="${p.name}">
-        </div>
+  <div class="card__media">
+    <span class="card__badge">NUEVO</span>
+    <img src="${p.image}" class="card__img card__img--main" alt="${p.name}">
+    ${p.images && p.images.length > 1 ? `<img src="${p.images[1]}" class="card__img card__img--hover" alt="${p.name}">` : ""}
+  </div>
 
-        <div class="card__info">
-          ${catLabel ? `<span class="card__cat">${catLabel}</span>` : ''}
-          <h3 class="card__title">${p.name}</h3>
-          <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
-        </div>
+  <div class="card__info">
+    <h3 class="card__title">${p.name}</h3>
 
-      </article>`;
-    }).join("");
+    <div class="card__bottom">
+      <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
+
+      <a class="card__cta"
+         href="https://wa.me/5492604002520?text=Hola!%20Quiero%20consultar%20por%20${encodeURIComponent(p.name)}"
+         target="_blank">
+         Consultar
+      </a>
+    </div>
+  </div>
+
+</article>
+    `).join("");
 
     observeCards();
   }
@@ -230,7 +211,18 @@ grid.addEventListener("click", (e) => {
   const card = e.target.closest(".product-link");
   if (!card) return;
 
-  window.location.href = `producto.html?id=${card.dataset.id}`;
+  const product = {
+    name: card.dataset.name,
+    image: card.dataset.image,
+    images: JSON.parse(decodeURIComponent(card.dataset.images || "[]")),
+    price: card.dataset.price,
+    cat: card.dataset.cat,
+    sub: card.dataset.sub
+  };
+
+  localStorage.setItem("productoSeleccionado", JSON.stringify(product));
+
+  window.location.href = "producto.html";
 });
   
 });

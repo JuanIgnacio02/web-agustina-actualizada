@@ -1,71 +1,54 @@
-const SUPABASE_URL = "https://srqkahdyboqannrmkqmf.supabase.co";
-const SUPABASE_KEY = "sb_publishable_C25BY4_efIwhRHoBqzYvgQ_MqMGmrI7";
+document.addEventListener("DOMContentLoaded", () => {
+  const data = localStorage.getItem("productoSeleccionado");
 
-document.addEventListener("DOMContentLoaded", async () => {
+  const nameEl = document.getElementById("productName");
+  const priceEl = document.getElementById("productPrice");
+  const waEl = document.getElementById("productWhatsApp");
+  const crumbsEl = document.getElementById("productCrumbs");
+  const emptyEl = document.getElementById("productEmpty");
+  const pillCat = document.getElementById("pillCat");
+  const pillSub = document.getElementById("pillSub");
+  const galleryEl = document.getElementById("productGallery");
+  const mainImgEl = document.getElementById("productImage");
 
-  const img        = document.getElementById("productImage");
-  const nameEl     = document.getElementById("productName");
-  const priceEl    = document.getElementById("productPrice");
-  const waEl       = document.getElementById("productWhatsApp");
-  const crumbsEl   = document.getElementById("productCrumbs");
-  const emptyEl    = document.getElementById("productEmpty");
-  const pillCat    = document.getElementById("pillCat");
-  const pillSub    = document.getElementById("pillSub");
-  const descCard   = document.getElementById("productDescCard");
-  const descEl     = document.getElementById("productDesc");
-  const galleryEl  = document.getElementById("productGallery");
-
-  // Leer el ID de la URL (?id=123)
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-
-  if (!id) {
-    showEmpty();
+  if (!data) {
+    emptyEl.hidden = false;
+    document.querySelector(".product__layout").style.display = "none";
     return;
   }
 
-  // Buscar el producto en Supabase
   let product;
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/productos?id=eq.${id}&limit=1`,
-      {
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
-      }
-    );
-    const data = await res.json();
-    product = data[0];
+    product = JSON.parse(data);
   } catch (e) {
-    showEmpty();
+    emptyEl.hidden = false;
+    document.querySelector(".product__layout").style.display = "none";
     return;
   }
 
-  if (!product) {
-    showEmpty();
-    return;
-  }
+  const name = product?.name || "Producto";
+  const price = Number(product?.price || 0);
+  const image = product?.image || "";
+  const images = product?.images?.length ? product.images : [image];
+  const cat = product?.cat || "";
+  const sub = product?.sub || "";
 
-  const name        = product.name        || "Producto";
-  const price       = Number(product.price || 0);
-  const image       = product.image_url   || "";
-  const cat         = product.cat         || "";
-  const sub         = product.sub         || "";
-  const description = product.description || "";
-  const gallery     = product.gallery     || "";
-
-  // Título de la pestaña
-  document.title = `${name} • AGUSTINA`;
-
-  nameEl.textContent  = name;
+  nameEl.textContent = name;
   priceEl.textContent = "$" + price.toLocaleString("es-AR");
 
-  img.src = image;
-  img.alt = name;
+  mainImgEl.src = images[0];
+  mainImgEl.alt = name;
 
-  // Pills + crumbs
+  if (images.length > 1 && galleryEl) {
+    galleryEl.innerHTML = images.map((url, i) => `
+      <img src="${url}" 
+           class="gallery__thumb${i === 0 ? " active" : ""}" 
+           alt="${name} ${i + 1}"
+           onclick="selectImg(this, '${url}')" />
+    `).join("");
+    galleryEl.style.display = "flex";
+  }
+
   const catLabel = prettify(cat);
   const subLabel = prettify(sub);
 
@@ -74,62 +57,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   crumbsEl.textContent = `Catálogo${catLabel ? " / " + catLabel : ""}${subLabel ? " / " + subLabel : ""}`;
 
-  // Descripción
-  if (description && descCard && descEl) {
-    descEl.textContent = description;
-    descCard.hidden = false;
-  }
-
-  // Galería
-  if (gallery && galleryEl) {
-    const urls = [image, ...gallery.split(",").map(u => u.trim()).filter(Boolean)];
-    if (urls.length > 1) {
-      galleryEl.hidden = false;
-      galleryEl.innerHTML = urls.map((url, i) => `
-        <img class="product__thumb ${i === 0 ? 'is-active' : ''}"
-             src="${url}" alt="foto ${i + 1}" />
-      `).join("");
-
-      galleryEl.querySelectorAll(".product__thumb").forEach(thumb => {
-        thumb.addEventListener("click", () => {
-          img.src = thumb.src;
-          galleryEl.querySelectorAll(".product__thumb").forEach(t => t.classList.remove("is-active"));
-          thumb.classList.add("is-active");
-        });
-      });
-    }
-  }
-
-  // WhatsApp
   const msg = `Hola! 👋 Quiero consultar por: ${name}. ¿Está disponible?`;
   waEl.href = `https://wa.me/5492604002520?text=${encodeURIComponent(msg)}`;
 
-  // Error de imagen
-  img.addEventListener("error", () => {
-    img.style.display = "none";
+  mainImgEl.addEventListener("error", () => {
+    mainImgEl.style.display = "none";
     const wrap = document.querySelector(".product__imgwrap");
-    wrap.classList.add("is-error");
-    wrap.innerHTML = `
-      <div class="product__imgfallback">
-        <div class="product__imgicon">🖼️</div>
-        <div>
-          <strong>No se pudo cargar la imagen</strong>
-          <div class="muted">Revisá el nombre/ubicación en assets.</div>
-        </div>
-      </div>
-    `;
+    if (wrap) {
+      wrap.classList.add("is-error");
+      wrap.innerHTML = `<div class="product__imgfallback"><div class="product__imgicon">🖼️</div><div><strong>No se pudo cargar la imagen</strong></div></div>`;
+    }
   });
-
-  function showEmpty() {
-    emptyEl.hidden = false;
-    const layout = document.querySelector(".product__layout");
-    if (layout) layout.style.display = "none";
-  }
 
   function prettify(str) {
     if (!str) return "";
-    return String(str)
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (m) => m.toUpperCase());
+    return String(str).replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
   }
 });
+
+function selectImg(thumb, url) {
+  document.getElementById("productImage").src = url;
+  document.querySelectorAll(".gallery__thumb").forEach(t => t.classList.remove("active"));
+  thumb.classList.add("active");
+}
