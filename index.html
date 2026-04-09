@@ -17,7 +17,11 @@
 
     <nav class="nav nav--bottom">
       <a href="#inicio" class="nav__link">Inicio</a>
+      <span class="nav__sep">·</span>
       <a href="#catalogo" class="nav__link">Catálogo</a>
+      <span class="nav__sep">·</span>
+      <a href="?cat=giftcards#catalogo" class="nav__link nav__link--gift">🎁 Gift Cards</a>
+      <span class="nav__sep">·</span>
       <a href="#contacto" class="nav__link">Contacto</a>
     </nav>
   </header>
@@ -92,6 +96,7 @@
         <button class="chip" type="button" data-filter="cat" data-value="regaleria">Regalería</button>
         <button class="chip" type="button" data-filter="cat" data-value="portacosmeticos">Portacosméticos</button>
         <button class="chip" type="button" data-filter="cat" data-value="marroquineria">Marroquinería</button>
+        <button class="chip chip--gift" type="button" data-filter="cat" data-value="giftcards">🎁 Gift Cards</button>
       </div>
 
       <div class="grid" id="product-grid"></div>

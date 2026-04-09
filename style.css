@@ -108,52 +108,70 @@ body{
 
 .nav{
   display: flex;
-  gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
   margin: 0;
+}
+
+/* ── Nav centrado y aesthetic ── */
+.nav--bottom{
+  width: 100%;
+  justify-content: center;
+  gap: 0;
+  padding: 4px 0 2px;
+}
+
+.nav__sep{
+  color: rgba(0,0,0,.2);
+  font-size: 11px;
+  padding: 0 10px;
+  user-select: none;
+  pointer-events: none;
 }
 
 .nav__link{
   position: relative;
   text-decoration: none;
-  color: #2d2727;
+  color: #6b5057;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
   font-weight: 500;
-  font-size: 15px;
-  padding: 4px 0;
-  background: none;
-  border: none;
-  border-radius: 0;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: 4px 4px;
+  transition: color .22s ease;
 }
 
 .nav__link::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:-4px;
-  width:0%;
-  height:1.5px;
-  background:#e8b6c8; /* rosa Agustina */
-  transition: width .25s ease;
-}
-
-.nav__link:hover::after{
-  width:100%;
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 0;
+  height: 1px;
+  background: #c06080;
+  transform: translateX(-50%);
+  transition: width .28s ease;
 }
 
 .nav__link:hover{
-  background: rgba(255,255,255,0.85);
-  border-color: rgba(0,0,0,0.10);
-  transform: translateY(-1px);
+  color: #c06080;
 }
 
-.nav__link--active{
-  background: rgba(255,255,255,0.95);
-  border-color: rgba(0,0,0,0.14);
-}
-
-.nav--bottom{
+.nav__link:hover::after{
   width: 100%;
-  justify-content: flex-start;
+}
+
+/* Gift Cards — toque especial */
+.nav__link--gift{
+  color: #b8608a;
+  font-weight: 600;
+}
+.nav__link--gift:hover{ color: #8a3060; }
+
+.chip--gift{
+  color: #b8608a !important;
+  font-weight: 600;
 }
 
 /* =========================

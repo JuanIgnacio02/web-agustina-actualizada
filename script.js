@@ -195,6 +195,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── Init ────────────────────────────────────────────
   grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:2rem;color:#999">Cargando...</p>`;
   products = await fetchProducts();
-  renderProducts({ type: "all", value: "all" });
+
+  // Si viene con ?cat=giftcards en la URL, filtrar directamente
+  const urlCat = new URLSearchParams(window.location.search).get("cat");
+  if (urlCat) {
+    renderProducts({ type: "cat", value: urlCat });
+    chips?.querySelectorAll(".chip").forEach(c => {
+      c.classList.toggle("is-active", c.dataset.value === urlCat);
+    });
+    if (sectionTitle) {
+      const matchChip = chips?.querySelector(`[data-value="${urlCat}"]`);
+      if (matchChip) sectionTitle.textContent = matchChip.textContent.trim();
+    }
+    document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+  } else {
+    renderProducts({ type: "all", value: "all" });
+  }
 
 });
