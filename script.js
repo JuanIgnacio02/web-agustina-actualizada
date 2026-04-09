@@ -166,6 +166,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // ── Nav "Catálogo" en mobile: abre el filter sheet ──
+  const navCatalogo = document.getElementById("navCatalogo");
+  if (navCatalogo) {
+    navCatalogo.addEventListener("click", (e) => {
+      if (isMobile()) {
+        e.preventDefault();
+        document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+        setTimeout(() => openSheet(), 300);
+      }
+    });
+  }
+
   // ── Header shrink on scroll ─────────────────────────
   function setHeaderH() {
     if (!header) return;

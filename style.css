@@ -1547,29 +1547,8 @@ body {
 
   .nav__sep { padding: 0 7px; }
 
-  /* ── Hero ── */
-  .hero--collage {
-    padding: 20px 16px 10px;
-  }
-
-  .hero__wrap {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    text-align: center;
-  }
-
-  .hero__right { display: none; }
-
-  .hero__headline {
-    font-size: clamp(30px, 9vw, 44px);
-    line-height: 1;
-  }
-
-  .hero__sub { font-size: 13px; max-width: 100%; }
-
-  .hero__actions { justify-content: center; }
-
-  .hero__badges { justify-content: center; }
+  /* ── Hero: oculto en mobile ── */
+  .hero--collage { display: none; }
 
   /* ── Catálogo ── */
   .main {
@@ -1580,6 +1559,9 @@ body {
   .section { padding-top: 16px; }
 
   .section__title { font-size: 22px; }
+
+  /* ── Header del catálogo (título + burger): oculto en mobile ── */
+  .catalogo__header { display: none; }
 
   /* ── Filtros desktop: ocultos en mobile ── */
   .catalogo__chips { display: none !important; }
