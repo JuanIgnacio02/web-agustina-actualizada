@@ -183,14 +183,75 @@
       gap: 12px;
     }
 
-    .product-item {
-      background: #fff;
+    .product-item-wrap {
       border: 1px solid #f0d6e0;
       border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .product-item {
+      background: #fff;
       padding: 14px 18px;
       display: flex;
       align-items: center;
       gap: 14px;
+    }
+
+    .img-panel {
+      background: #fff7fa;
+      border-top: 1px solid #f0d6e0;
+      padding: 16px 18px;
+    }
+
+    .img-panel__label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .img-panel__thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .img-panel__thumb-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .img-panel__thumb {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #f0d6e0;
+    }
+
+    .img-panel__badge {
+      position: absolute;
+      bottom: 3px;
+      left: 3px;
+      background: #c06080;
+      color: #fff;
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .img-panel__actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .img-panel__status {
+      font-size: 12px;
+      color: #065f46;
     }
 
     .product-item img {
@@ -531,24 +592,57 @@
       return;
     }
 
-    list.innerHTML = products.map(p => `
-      <div class="product-item">
-        <img src="${p.image_url}" alt="${p.name}" onerror="this.src=''" />
-        <div class="product-item__info">
-          <div class="product-item__name">
-            ${p.name}
-            ${!p.activo ? '<span class="badge-inactivo">Inactivo</span>' : ''}
+    list.innerHTML = products.map(p => {
+      const imgs = p.images && p.images.length ? p.images : (p.image_url ? [p.image_url] : []);
+      const thumbsHtml = imgs.map((url, i) => `
+        <div class="img-panel__thumb-wrap">
+          <img src="${url}" class="img-panel__thumb" onerror="this.style.display='none'" />
+          ${i === 0 ? '<span class="img-panel__badge">Principal</span>' : ''}
+        </div>`).join("");
+
+      return `
+      <div class="product-item-wrap">
+        <div class="product-item">
+          <img src="${p.image_url}" alt="${p.name}" onerror="this.src=''" />
+          <div class="product-item__info">
+            <div class="product-item__name">
+              ${p.name}
+              ${!p.activo ? '<span class="badge-inactivo">Inactivo</span>' : ''}
+            </div>
+            <div class="product-item__meta">${p.cat}${p.sub ? ' · ' + p.sub : ''} · ${imgs.length} foto${imgs.length !== 1 ? 's' : ''}</div>
           </div>
-          <div class="product-item__meta">${p.cat}${p.sub ? ' · ' + p.sub : ''}</div>
+          <div class="product-item__price">$${p.price.toLocaleString("es-AR")}</div>
+          <div class="product-item__actions">
+            <button class="btn btn--ghost btn--sm" onclick="editPrice(${p.id}, ${p.price})">✏️ Precio</button>
+            <button class="btn btn--ghost btn--sm" onclick="toggleImgPanel(${p.id})">📸 Fotos</button>
+            <button class="btn btn--ghost btn--sm" onclick="toggleActivo(${p.id}, ${p.activo})">${p.activo ? '🙈 Ocultar' : '👁 Mostrar'}</button>
+            <button class="btn btn--danger btn--sm" onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')">🗑</button>
+          </div>
         </div>
-        <div class="product-item__price">$${p.price.toLocaleString("es-AR")}</div>
-        <div class="product-item__actions">
-          <button class="btn btn--ghost btn--sm" onclick="editPrice(${p.id}, ${p.price})">✏️ Precio</button>
-          <button class="btn btn--ghost btn--sm" onclick="toggleActivo(${p.id}, ${p.activo})">${p.activo ? '🙈 Ocultar' : '👁 Mostrar'}</button>
-          <button class="btn btn--danger btn--sm" onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')">🗑</button>
+
+        <!-- Panel inline de imágenes -->
+        <div id="img-panel-${p.id}" class="img-panel" style="display:none">
+          <p class="img-panel__label">Fotos actuales (${imgs.length}):</p>
+          <div class="img-panel__thumbs" id="thumbs-${p.id}">${thumbsHtml || '<span style="color:#aaa;font-size:13px">Sin imágenes</span>'}</div>
+
+          <p class="img-panel__label" style="margin-top:4px">Agregar más fotos:</p>
+          <input type="file" id="img-input-${p.id}" accept="image/*" multiple style="display:none"
+                 onchange="previewNewImgs(${p.id}, this)" />
+          <div class="upload-zone" style="padding:14px" onclick="document.getElementById('img-input-${p.id}').click()">
+            📷 Hacé click para elegir fotos (podés seleccionar varias)
+          </div>
+          <div id="new-previews-${p.id}" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
+
+          <div class="img-panel__actions">
+            <button class="btn btn--primary btn--sm" id="btn-save-imgs-${p.id}" onclick="saveNewImages(${p.id})">
+              Guardar fotos
+            </button>
+            <button class="btn btn--ghost btn--sm" onclick="toggleImgPanel(${p.id})">Cancelar</button>
+            <span class="img-panel__status" id="img-status-${p.id}"></span>
+          </div>
         </div>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
   }
 
   // ---- EDITAR PRECIO ----
@@ -619,6 +713,119 @@
     if (type === "ok") { ok.textContent = text; ok.style.display = "block"; }
     else { err.textContent = text; err.style.display = "block"; }
     setTimeout(() => { ok.style.display = "none"; err.style.display = "none"; }, 4000);
+  }
+
+  // ---- PANEL INLINE DE IMÁGENES ----
+  const pendingImgFiles = {};
+
+  function toggleImgPanel(id) {
+    const panel = document.getElementById(`img-panel-${id}`);
+    if (!panel) return;
+    const isOpen = panel.style.display !== "none";
+    panel.style.display = isOpen ? "none" : "block";
+    // Limpiar estado si se cierra
+    if (isOpen) {
+      pendingImgFiles[id] = [];
+      const prev = document.getElementById(`new-previews-${id}`);
+      if (prev) prev.innerHTML = "";
+      const inp = document.getElementById(`img-input-${id}`);
+      if (inp) inp.value = "";
+      const zone = panel.querySelector(".upload-zone");
+      if (zone) zone.textContent = "📷 Hacé click para elegir fotos (podés seleccionar varias)";
+    }
+  }
+
+  function previewNewImgs(id, input) {
+    const files = Array.from(input.files);
+    pendingImgFiles[id] = files;
+    const container = document.getElementById(`new-previews-${id}`);
+    container.innerHTML = "";
+    files.forEach((f, i) => {
+      const wrap = document.createElement("div");
+      wrap.style.cssText = "position:relative;display:inline-block";
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(f);
+      img.style.cssText = "width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #f0d6e0";
+      wrap.appendChild(img);
+      container.appendChild(wrap);
+    });
+    const zone = document.querySelector(`#img-panel-${id} .upload-zone`);
+    if (zone) zone.textContent = `✓ ${files.length} foto${files.length > 1 ? "s" : ""} lista${files.length > 1 ? "s" : ""} para subir`;
+  }
+
+  async function saveNewImages(id) {
+    const files = pendingImgFiles[id];
+    if (!files || !files.length) {
+      alert("Seleccioná al menos una foto para agregar.");
+      return;
+    }
+
+    const btn = document.getElementById(`btn-save-imgs-${id}`);
+    const status = document.getElementById(`img-status-${id}`);
+    btn.disabled = true;
+    btn.textContent = "Subiendo...";
+    if (status) status.textContent = "";
+
+    try {
+      // Obtener imágenes actuales del producto
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}&select=images,image_url`, {
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+      });
+      const [prod] = await res.json();
+      const existing = (prod.images && prod.images.length) ? prod.images : (prod.image_url ? [prod.image_url] : []);
+
+      // Subir nuevas imágenes
+      const newUrls = await Promise.all(files.map(f => uploadImage(f)));
+      const allImages = [...existing, ...newUrls];
+
+      // Actualizar producto en Supabase
+      const patch = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+        method: "PATCH",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({ images: allImages, image_url: allImages[0] })
+      });
+
+      if (!patch.ok) throw new Error("Error al guardar");
+
+      if (status) status.textContent = `✓ ${newUrls.length} foto${newUrls.length > 1 ? "s" : ""} agregada${newUrls.length > 1 ? "s" : ""}`;
+      pendingImgFiles[id] = [];
+
+      // Refrescar solo los thumbs del panel sin recargar toda la lista
+      const thumbsContainer = document.getElementById(`thumbs-${id}`);
+      if (thumbsContainer) {
+        thumbsContainer.innerHTML = allImages.map((url, i) => `
+          <div class="img-panel__thumb-wrap">
+            <img src="${url}" class="img-panel__thumb" onerror="this.style.display='none'" />
+            ${i === 0 ? '<span class="img-panel__badge">Principal</span>' : ''}
+          </div>`).join("");
+      }
+
+      // Actualizar el contador en la meta
+      const meta = document.querySelector(`#img-panel-${id}`)?.previousElementSibling?.querySelector(".product-item__meta");
+      if (meta) {
+        const parts = meta.textContent.split("·");
+        if (parts.length >= 2) meta.textContent = parts.slice(0, -1).join("·") + ` · ${allImages.length} foto${allImages.length !== 1 ? "s" : ""}`;
+      }
+
+      // Limpiar input y preview
+      const inp = document.getElementById(`img-input-${id}`);
+      if (inp) inp.value = "";
+      const prev = document.getElementById(`new-previews-${id}`);
+      if (prev) prev.innerHTML = "";
+      const zone = document.querySelector(`#img-panel-${id} .upload-zone`);
+      if (zone) zone.textContent = "📷 Hacé click para elegir fotos (podés seleccionar varias)";
+
+    } catch (e) {
+      if (status) { status.textContent = "Error: " + e.message; status.style.color = "#c0392b"; }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Guardar fotos";
+    }
   }
 </script>
 </body>

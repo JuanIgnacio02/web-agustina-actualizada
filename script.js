@@ -112,39 +112,46 @@ if (chipGroup) {
     if (filter.type === "cat") list = products.filter((p) => p.cat === filter.value);
     if (filter.type === "sub") list = products.filter((p) => p.sub === filter.value);
 
-    grid.innerHTML = list.map(p => `
+    grid.innerHTML = list.map(p => {
+      const imgs = p.images && p.images.length ? p.images : [p.image];
+      const dots = imgs.length > 1
+        ? `<div class="card__dots">${imgs.map((_, i) =>
+            `<span class="card__dot${i === 0 ? ' is-active' : ''}"></span>`
+          ).join("")}</div>`
+        : "";
+
+      return `
       <article class="card product-link"
-      data-name="${p.name}"
-      data-image="${p.image}"
-      data-images="${encodeURIComponent(JSON.stringify(p.images || [p.image]))}"
-      data-price="${p.price}"
-      data-cat="${p.cat}"
-      data-sub="${p.sub}">
+        data-name="${p.name}"
+        data-image="${p.image}"
+        data-images="${encodeURIComponent(JSON.stringify(imgs))}"
+        data-price="${p.price}"
+        data-cat="${p.cat}"
+        data-sub="${p.sub}">
 
-  <div class="card__media">
-    <span class="card__badge">NUEVO</span>
-    <img src="${p.image}" class="card__img card__img--main" alt="${p.name}">
-    ${p.images && p.images.length > 1 ? `<img src="${p.images[1]}" class="card__img card__img--hover" alt="${p.name}">` : ""}
-  </div>
+        <div class="card__media">
+          <span class="card__badge">NUEVO</span>
+          <img src="${imgs[0]}" class="card__img" alt="${p.name}" style="transition:transform .4s ease,opacity .15s ease">
+          ${dots}
+        </div>
 
-  <div class="card__info">
-    <h3 class="card__title">${p.name}</h3>
+        <div class="card__info">
+          <h3 class="card__title">${p.name}</h3>
+          <div class="card__bottom">
+            <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
+            <a class="card__cta"
+               href="https://wa.me/5492604002520?text=Hola!%20Quiero%20consultar%20por%20${encodeURIComponent(p.name)}"
+               target="_blank">
+               Consultar
+            </a>
+          </div>
+        </div>
 
-    <div class="card__bottom">
-      <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
-
-      <a class="card__cta"
-         href="https://wa.me/5492604002520?text=Hola!%20Quiero%20consultar%20por%20${encodeURIComponent(p.name)}"
-         target="_blank">
-         Consultar
-      </a>
-    </div>
-  </div>
-
-</article>
-    `).join("");
+      </article>`;
+    }).join("");
 
     observeCards();
+    attachImageCycle();
   }
 
   // =========================
@@ -199,6 +206,45 @@ if (chipGroup) {
   grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:2rem;color:#999">Cargando productos...</p>`;
   products = await fetchProducts();
   renderProducts({ type: "all", value: "all" });
+
+  // =========================
+  // Hover cycling de imágenes
+  // =========================
+  function attachImageCycle() {
+    document.querySelectorAll(".product-link").forEach(card => {
+      const imgs = JSON.parse(decodeURIComponent(card.dataset.images || "[]"));
+      if (imgs.length <= 1) return;
+
+      const imgEl = card.querySelector(".card__img");
+      const dots  = card.querySelectorAll(".card__dot");
+      let timer = null;
+      let idx = 0;
+
+      function showImg(i) {
+        idx = i;
+        imgEl.style.opacity = "0";
+        setTimeout(() => {
+          imgEl.src = imgs[idx];
+          imgEl.style.opacity = "1";
+        }, 130);
+        dots.forEach((d, j) => d.classList.toggle("is-active", j === idx));
+      }
+
+      card.addEventListener("mouseenter", () => {
+        idx = 0;
+        clearInterval(timer);
+        timer = setInterval(() => showImg((idx + 1) % imgs.length), 800);
+      });
+
+      card.addEventListener("mouseleave", () => {
+        clearInterval(timer);
+        timer = null;
+        imgEl.style.opacity = "1";
+        imgEl.src = imgs[0];
+        dots.forEach((d, j) => d.classList.toggle("is-active", j === 0));
+      });
+    });
+  }
 
 // =========================
 // Abrir página de producto (SOLO en el grid)

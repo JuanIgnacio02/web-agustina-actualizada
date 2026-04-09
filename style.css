@@ -1393,3 +1393,124 @@ body {
   border-color: #c06080;
   opacity: 1;
 }
+
+/* =========================
+   WhatsApp button
+========================= */
+.btn--whatsapp {
+  background: #25D366;
+  color: #fff;
+  gap: 8px;
+  font-weight: 600;
+}
+.btn--whatsapp:hover {
+  background: #1da855;
+  box-shadow: 0 12px 28px rgba(37,211,102,0.38);
+  color: #fff;
+}
+
+/* =========================
+   Card image hover dots
+========================= */
+.card__dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.5);
+  transition: background .2s, transform .2s;
+}
+
+.card__dot.is-active {
+  background: #fff;
+  transform: scale(1.35);
+}
+
+/* =========================
+   Admin: panel inline fotos
+========================= */
+.product-item-wrap {
+  border: 1px solid #f0d6e0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.product-item-wrap .product-item {
+  border: none;
+  border-radius: 0;
+}
+
+.img-panel {
+  background: #fff7fa;
+  border-top: 1px solid #f0d6e0;
+  padding: 16px 18px;
+  animation: slideDown .2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.img-panel__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.img-panel__thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.img-panel__thumb-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.img-panel__thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #f0d6e0;
+}
+
+.img-panel__badge {
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  background: #c06080;
+  color: #fff;
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.img-panel__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.img-panel__status {
+  font-size: 12px;
+  color: #065f46;
+}
