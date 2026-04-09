@@ -17,11 +17,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   const grid        = document.getElementById("product-grid");
   const sectionTitle = document.getElementById("section-title");
   const yearEl      = document.getElementById("year");
-  const chips       = document.querySelector(".catalogo__chips");
+  const chips       = document.getElementById("catalogoChips");
   const chipGroup   = document.querySelector(".chip-group");
   const header      = document.querySelector(".header");
+  const filterBurger = document.getElementById("filterBurger");
+  const filterBurgerActive = document.getElementById("filterBurgerActive");
 
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // ── Botón hamburguesa de filtros (mobile) ───────────
+  function isMobile() { return window.innerWidth <= 768; }
+
+  if (filterBurger) {
+    filterBurger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = chips.classList.toggle("is-open");
+      filterBurger.setAttribute("aria-expanded", isOpen);
+    });
+
+    // Cerrar al tocar fuera
+    document.addEventListener("click", (e) => {
+      if (isMobile() && chips && !chips.contains(e.target) && !filterBurger.contains(e.target)) {
+        chips.classList.remove("is-open");
+        filterBurger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function closeBurgerMenu() {
+    if (chips) chips.classList.remove("is-open");
+    if (filterBurger) filterBurger.setAttribute("aria-expanded", "false");
+  }
 
   // ── Submenú Indumentaria (click) ────────────────────
   if (chipGroup) {
@@ -35,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       subMenu.addEventListener("click", () => chipGroup.classList.remove("open"));
     }
     document.addEventListener("click", (e) => {
-      if (!chipGroup.contains(e.target)) chipGroup.classList.remove("open");
+      if (!chipGroup.contains(e.target) && !isMobile()) chipGroup.classList.remove("open");
     });
   }
 
@@ -169,8 +195,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       const type  = btn.dataset.filter;
       const value = btn.dataset.value;
 
-      if (sectionTitle) {
-        sectionTitle.textContent = type === "all" ? "Todo" : btn.textContent.trim();
+      const label = type === "all" ? "Todo" : btn.textContent.trim().replace("▾", "").trim();
+
+      if (sectionTitle) sectionTitle.textContent = label;
+
+      // Actualizar label del botón hamburguesa en mobile
+      if (filterBurgerActive) {
+        filterBurgerActive.textContent = type === "all" ? "" : label;
+      }
+
+      // Cerrar el panel en mobile
+      if (isMobile()) {
+        setTimeout(() => closeBurgerMenu(), 180);
       }
 
       grid.classList.add("is-animating");

@@ -75,9 +75,20 @@
 
     <!-- CATÁLOGO -->
     <section class="section" id="catalogo">
-      <h2 class="section__title" id="section-title">Todo</h2>
+      <div class="catalogo__header">
+        <h2 class="section__title" id="section-title">Todo</h2>
+        <button class="filter-burger" id="filterBurger" aria-expanded="false" aria-controls="catalogoChips">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2" y1="4" x2="14" y2="4"/>
+            <line x1="2" y1="8" x2="14" y2="8"/>
+            <line x1="2" y1="12" x2="14" y2="12"/>
+          </svg>
+          <span class="filter-burger__label">Filtrar</span>
+          <span class="filter-burger__active" id="filterBurgerActive"></span>
+        </button>
+      </div>
 
-      <div class="catalogo__chips" aria-label="Categorías">
+      <div class="catalogo__chips" id="catalogoChips" aria-label="Categorías">
         <button class="chip is-active" type="button" data-filter="all" data-value="all">Todo</button>
 
         <div class="chip-group">
