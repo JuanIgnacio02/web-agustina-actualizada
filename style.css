@@ -1655,8 +1655,8 @@ body {
   .header__spacer { display: none; }
 
   .brand__name {
-    font-size: 32px;
-    letter-spacing: 3px;
+    font-size: 36px;
+    letter-spacing: 4px;
   }
 
   .brand__logo { height: 70px; }
@@ -1672,8 +1672,11 @@ body {
   .nav--bottom::-webkit-scrollbar { display: none; }
 
   .nav__link {
-    font-size: 10px;
-    padding: 3px 2px;
+    font-size: 12px;
+    padding: 8px 6px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
     white-space: nowrap;
   }
 
@@ -1883,13 +1886,13 @@ body {
   }
 
   .card__title {
-    font-size: 12px;
+    font-size: 13px;
     white-space: normal;
   }
 
-  .card__price { font-size: 12px; }
+  .card__price { font-size: 13px; }
 
-  .card__info { padding: 10px 2px 0; }
+  .card__info { padding: 10px 4px 0; }
 
   /* ── Contacto ── */
   .contact {
@@ -2257,12 +2260,14 @@ body {
 .card__add-btn:hover { background: #1a1a1a; color: white; transform: translateY(0) scale(1.08); }
 .card__add-btn:active { transform: scale(.95); }
 
-/* En touch: siempre visible, más chico */
+/* En touch: siempre visible, tamaño cómodo para dedos (44px mínimo Apple/Google) */
 @media (hover: none) {
   .card__add-btn {
     opacity: 1;
     transform: translateY(0);
-    width: 34px; height: 34px;
+    width: 44px; height: 44px;
+    bottom: 8px;
+    right: 8px;
   }
 }
 
