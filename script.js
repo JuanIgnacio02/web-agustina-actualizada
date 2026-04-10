@@ -32,6 +32,64 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function isMobile() { return window.innerWidth <= 768; }
 
+  // ── Buscador ────────────────────────────────────────
+  const searchToggle = document.getElementById("searchToggle");
+  const searchBox    = document.getElementById("searchBox");
+  const searchInput  = document.getElementById("searchInput");
+  const searchClear  = document.getElementById("searchClear");
+  const headerSearch = document.getElementById("headerSearch");
+  let   searchQuery  = "";
+
+  if (searchToggle) {
+    searchToggle.addEventListener("click", () => {
+      headerSearch.classList.toggle("is-open");
+      if (headerSearch.classList.contains("is-open")) {
+        setTimeout(() => searchInput?.focus(), 300);
+      } else {
+        clearSearch();
+      }
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      searchQuery = searchInput.value.trim().toLowerCase();
+      renderProducts(activeFilter);
+      // Scroll al catálogo si hay texto y el usuario está arriba
+      if (searchQuery) {
+        document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+    searchInput.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        headerSearch.classList.remove("is-open");
+        clearSearch();
+      }
+    });
+  }
+
+  if (searchClear) {
+    searchClear.addEventListener("click", () => {
+      clearSearch();
+      searchInput?.focus();
+    });
+  }
+
+  function clearSearch() {
+    searchQuery = "";
+    if (searchInput) searchInput.value = "";
+    renderProducts(activeFilter);
+  }
+
+  // Cerrar al click fuera
+  document.addEventListener("click", e => {
+    if (headerSearch && !headerSearch.contains(e.target)) {
+      if (headerSearch.classList.contains("is-open") && !searchQuery) {
+        headerSearch.classList.remove("is-open");
+      }
+    }
+  });
+
   // ── Construir lista del bottom sheet desde los chips ─
   let activeFilter = { type: "all", value: "all" };
 
@@ -220,9 +278,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (filter.type === "cat") list = products.filter(p => p.cat === filter.value);
     if (filter.type === "sub") list = products.filter(p => p.sub === filter.value);
 
+    // Filtro de búsqueda por texto
+    if (searchQuery) {
+      list = list.filter(p => p.name.toLowerCase().includes(searchQuery));
+    }
+
     if (list.length === 0) {
       grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:3rem 1rem;color:#aaa;font-size:15px;">
-        Todavía no hay productos en esta categoría 🌸</p>`;
+        ${searchQuery ? `No encontramos "${searchInput.value}" 🔍` : "Todavía no hay productos en esta categoría 🌸"}</p>`;
       return;
     }
 
