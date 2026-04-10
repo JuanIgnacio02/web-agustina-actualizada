@@ -1943,6 +1943,13 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.cart-item__efectivo {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1a8f4a;
+  margin-top: 2px;
+}
 .cart-item__price {
   font-family: 'Inter', sans-serif;
   font-size: 14px;

@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── Fetch productos ─────────────────────────────────
   async function fetchProducts() {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/productos?activo=eq.true&order=created_at.desc&select=id,name,price,cat,sub,image_url,images`,
+      `${SUPABASE_URL}/rest/v1/productos?activo=eq.true&order=created_at.desc&select=id,name,price,precio_efectivo,cat,sub,image_url,images`,
       { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } }
     );
     if (!res.ok) return [];
@@ -265,6 +265,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               data-cart-id="${p.id}"
               data-cart-name="${nameEncoded}"
               data-cart-price="${p.price}"
+              data-cart-efectivo="${p.precio_efectivo || 0}"
               data-cart-image="${imgEncoded}"
               data-cart-cat="${p.cat || ""}"
               aria-label="Agregar al carrito">
@@ -342,11 +343,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.stopPropagation();
       if (typeof cartAdd === "function") {
         cartAdd({
-          id:    addBtn.dataset.cartId,
-          name:  decodeURIComponent(addBtn.dataset.cartName),
-          price: Number(addBtn.dataset.cartPrice),
-          image: decodeURIComponent(addBtn.dataset.cartImage),
-          cat:   addBtn.dataset.cartCat,
+          id:             addBtn.dataset.cartId,
+          name:           decodeURIComponent(addBtn.dataset.cartName),
+          price:          Number(addBtn.dataset.cartPrice),
+          precio_efectivo: Number(addBtn.dataset.cartEfectivo) || 0,
+          image:          decodeURIComponent(addBtn.dataset.cartImage),
+          cat:            addBtn.dataset.cartCat,
         });
       }
       return;

@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           ? `${name} — $${gcSelectedAmount.toLocaleString("es-AR")}`
           : name;
 
-        cartAdd({ id: String(product.id) + (isGiftCard ? `-${gcSelectedAmount}` : ""), name: finalName, price: finalPrice, image: images[0] || image, cat });
+        cartAdd({ id: String(product.id) + (isGiftCard ? `-${gcSelectedAmount}` : ""), name: finalName, price: finalPrice, precio_efectivo: isGiftCard ? 0 : precioEfectivo, image: images[0] || image, cat });
 
         cartBtn.classList.add("added");
         cartBtn.innerHTML = `

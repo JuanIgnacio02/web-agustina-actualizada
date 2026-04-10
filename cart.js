@@ -45,6 +45,13 @@
   // ── Contadores ───────────────────────────────────────
   function totalCount() { return getCart().reduce((s, i) => s + i.qty, 0); }
   function totalPrice() { return getCart().reduce((s, i) => s + i.price * i.qty, 0); }
+  function totalEfectivo() {
+    const cart = getCart();
+    const hasEfectivo = cart.some(i => i.precio_efectivo > 0);
+    if (!hasEfectivo) return 0;
+    // Si un item no tiene precio efectivo, usa el precio normal
+    return cart.reduce((s, i) => s + (i.precio_efectivo > 0 ? i.precio_efectivo : i.price) * i.qty, 0);
+  }
 
   function updateBadge() {
     const n = totalCount();
@@ -128,6 +135,7 @@
         <div class="cart-item__info">
           <p class="cart-item__name">${item.name}</p>
           <p class="cart-item__price">$${(item.price * item.qty).toLocaleString("es-AR")}</p>
+          ${item.precio_efectivo > 0 ? `<p class="cart-item__efectivo">💵 Efectivo: $${(item.precio_efectivo * item.qty).toLocaleString("es-AR")}</p>` : ""}
           <div class="cart-item__qty">
             <button class="cart-qty-btn" onclick="cartQty('${item.id}', -1)">−</button>
             <span class="cart-qty-num">${item.qty}</span>
@@ -146,6 +154,19 @@
       footer.hidden = false;
       const totalEl = document.getElementById("cartTotal");
       if (totalEl) totalEl.textContent = "$" + totalPrice().toLocaleString("es-AR");
+
+      const ef = totalEfectivo();
+      const efRow = document.getElementById("cartTotalEfectivo");
+      if (efRow) {
+        if (ef > 0 && ef !== totalPrice()) {
+          efRow.hidden = false;
+          const efEl = document.getElementById("cartTotalEfectivoVal");
+          if (efEl) efEl.textContent = "$" + ef.toLocaleString("es-AR");
+        } else {
+          efRow.hidden = true;
+        }
+      }
+
       const waBtn = document.getElementById("cartWaBtn");
       if (waBtn) waBtn.href = buildWALink(cart);
     }
@@ -156,12 +177,16 @@
       `• _${i.name}_ x${i.qty}  →  $${(i.price * i.qty).toLocaleString("es-AR")}`
     );
     const total = totalPrice().toLocaleString("es-AR");
+    const ef    = totalEfectivo();
+    const efLine = (ef > 0 && ef !== totalPrice())
+      ? `\n💵 *Total en efectivo: $${ef.toLocaleString("es-AR")}*`
+      : "";
     const msg = [
       "Hola Agustina! 🛍️ Me gustaría consultar por estos productos:",
       "",
       ...lines,
       "",
-      `💰 *Total estimado: $${total}*`,
+      `💰 *Total estimado: $${total}*${efLine}`,
       "",
       "¿Están disponibles? ¡Gracias! 😊"
     ].join("\n");
@@ -197,6 +222,10 @@
           <div class="cart-panel__total">
             <span>Total estimado</span>
             <strong id="cartTotal">$0</strong>
+          </div>
+          <div class="cart-panel__total cart-panel__total--efectivo" id="cartTotalEfectivo" hidden>
+            <span>💵 Total en efectivo</span>
+            <strong id="cartTotalEfectivoVal" style="color:#1a8f4a">$0</strong>
           </div>
           <a class="cart-panel__wa" id="cartWaBtn" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
