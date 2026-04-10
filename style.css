@@ -1084,6 +1084,48 @@ body {
   .card{ transition: none !important; opacity: 1; transform: none; }
 }
 
+/* ── Skeleton loader ── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-card {
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.skeleton-media {
+  width: 100%;
+  aspect-ratio: 3/4;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f0e8ec 25%, #ede0e5 50%, #f0e8ec 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-info {
+  padding: 10px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-line {
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0e8ec 25%, #ede0e5 50%, #f0e8ec 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  width: 100%;
+}
+.skeleton-line--short { width: 45%; height: 9px; }
+.skeleton-line--price { width: 35%; height: 13px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-media, .skeleton-line { animation: none; background: #f0e8ec; }
+}
+
 /* =========================
    CHIPS / FILTROS — tabs minimalistas
 ========================= */
@@ -1994,12 +2036,13 @@ body {
 .cart-item:last-child { border-bottom: none; }
 
 .cart-item__img {
-  width: 70px;
-  height: 85px;
+  width: 74px;
+  height: 90px;
   object-fit: cover;
   border-radius: 10px;
   background: #f5edf0;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.10);
 }
 
 .cart-item__info {

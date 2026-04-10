@@ -423,8 +423,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = `producto.html?id=${card.dataset.id}`;
   });
 
+  // ── Skeleton loader ─────────────────────────────────
+  function showSkeletons(n = 8) {
+    grid.innerHTML = Array.from({ length: n }, () => `
+      <div class="skeleton-card">
+        <div class="skeleton-media"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-line skeleton-line--short"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line skeleton-line--price"></div>
+        </div>
+      </div>`).join("");
+  }
+
   // ── Init ────────────────────────────────────────────
-  grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:2rem;color:#999">Cargando...</p>`;
+  showSkeletons();
   products = await fetchProducts();
 
   // Si viene con ?cat=giftcards en la URL, filtrar directamente
