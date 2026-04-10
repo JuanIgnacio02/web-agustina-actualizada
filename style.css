@@ -85,6 +85,7 @@ body{
   align-items: center;
   justify-content: center;
   width: 36px; height: 36px;
+  touch-action: manipulation;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -116,11 +117,12 @@ body{
   border: none;
   outline: none;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 16px; /* ≥16px evita el auto-zoom de iOS Safari */
   color: #1a1a1a;
   background: transparent;
   padding: 7px 10px 7px 14px;
   width: 210px;
+  touch-action: manipulation;
 }
 .search-input::placeholder { color: #bbb; }
 
