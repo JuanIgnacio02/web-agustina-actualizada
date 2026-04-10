@@ -226,13 +226,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // ── Scroll exacto descontando el header ─────────────
+  function scrollToCatalogo() {
+    const el = document.getElementById("catalogo");
+    if (!el) return;
+    const headerH = header ? header.offsetHeight : 0;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerH;
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+
+  // ── Botón "Ver colección" del hero mobile ────────────
+  document.querySelector(".hero-mobile__btn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    scrollToCatalogo();
+  });
+
   // ── Nav "Catálogo" en mobile: abre el filter sheet ──
   const navCatalogo = document.getElementById("navCatalogo");
   if (navCatalogo) {
     navCatalogo.addEventListener("click", (e) => {
       if (isMobile()) {
         e.preventDefault();
-        document.querySelector("#catalogo")?.scrollIntoView({ behavior: "smooth" });
+        scrollToCatalogo();
         setTimeout(() => openSheet(), 300);
       }
     });
