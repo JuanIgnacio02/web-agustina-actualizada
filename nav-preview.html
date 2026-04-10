@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nav preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0e8ec; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 40px; padding: 40px 20px; }
+
+    label { font-size: 12px; color: #888; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* ── Teléfono mock ── */
+    .phone {
+      width: 320px;
+      background: #fff7fa;
+      border-radius: 36px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.08);
+      overflow: hidden;
+      border: 8px solid #1a1a1a;
+    }
+
+    /* Header simulado */
+    .fake-header {
+      background: #fff7fa;
+      padding: 18px 20px 12px;
+      text-align: center;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .fake-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      letter-spacing: 4px;
+      color: #1a1a1a;
+    }
+
+    /* Nav con íconos */
+    .nav-icons {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 6px 0 8px;
+      background: #fff7fa;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 12px;
+      transition: background .15s;
+      min-width: 60px;
+    }
+    .nav-item:hover { background: rgba(0,0,0,.04); }
+
+    .nav-icon {
+      width: 22px;
+      height: 22px;
+      color: #aaa;
+    }
+    .nav-text {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: #aaa;
+    }
+
+    /* activo */
+    .nav-item.active .nav-icon { color: #c06080; }
+    .nav-item.active .nav-text { color: #c06080; font-weight: 600; }
+    .nav-item.active { background: rgba(192,96,128,.07); }
+
+    /* Contenido fake */
+    .fake-content {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .fake-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.055);
+    }
+    .fake-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #f5dde8 0%, #ede0e5 100%);
+    }
+    .fake-info { padding: 8px 8px 10px; }
+    .fake-name { width: 80%; height: 8px; background: #e8e0e4; border-radius: 4px; margin-bottom: 6px; }
+    .fake-price { width: 45%; height: 9px; background: #d4ccd0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <label>Cómo quedaría ↓</label>
+
+  <div class="phone">
+    <div class="fake-header">
+      <div class="fake-brand">AGUSTINA</div>
+      <nav class="nav-icons">
+
+        <!-- Inicio -->
+        <a href="#" class="nav-item active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+            <path d="M9 21V12h6v9"/>
+          </svg>
+          <span class="nav-text">Inicio</span>
+        </a>
+
+        <!-- Catálogo -->
+        <a href="#" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          <span class="nav-text">Catálogo</span>
+        </a>
+
+        <!-- Gift Cards -->
+        <a href="#" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="8" width="20" height="13" rx="2"/>
+            <path d="M12 8v13"/>
+            <path d="M2 12h20"/>
+            <path d="M8 8c0-2 1.5-4 4-4s4 2 4 4"/>
+          </svg>
+          <span class="nav-text">Gift</span>
+        </a>
+
+        <!-- Contacto -->
+        <a href="#" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+          <span class="nav-text">Contacto</span>
+        </a>
+
+      </nav>
+    </div>
+
+    <!-- Fake product grid -->
+    <div class="fake-content">
+      <div class="fake-card"><div class="fake-img"></div><div class="fake-info"><div class="fake-name"></div><div class="fake-price"></div></div></div>
+      <div class="fake-card"><div class="fake-img"></div><div class="fake-info"><div class="fake-name"></div><div class="fake-price"></div></div></div>
+      <div class="fake-card"><div class="fake-img"></div><div class="fake-info"><div class="fake-name"></div><div class="fake-price"></div></div></div>
+      <div class="fake-card"><div class="fake-img"></div><div class="fake-info"><div class="fake-name"></div><div class="fake-price"></div></div></div>
+    </div>
+  </div>
+
+</body>
+</html>
