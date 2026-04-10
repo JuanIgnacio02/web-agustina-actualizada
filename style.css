@@ -250,6 +250,10 @@ body{
 }
 .nav__link--gift:hover{ color: #8a3060; }
 
+/* Ícono + label — ocultos en desktop (sólo mobile los usa) */
+.nav__icon  { display: none; }
+.nav__label { display: inline; }
+
 .chip--gift{
   color: #b8608a !important;
   font-weight: 600;
@@ -1664,26 +1668,49 @@ body {
 
   .brand__logo { height: 70px; }
 
+  /* ── Nav con íconos en mobile ── */
   .nav--bottom {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
     gap: 0;
-    padding: 6px 0 4px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: center;
-    scrollbar-width: none;
+    padding: 4px 0 6px;
+    overflow: visible;
   }
-  .nav--bottom::-webkit-scrollbar { display: none; }
+
+  .nav__sep { display: none; }
 
   .nav__link {
-    font-size: 12px;
-    padding: 8px 6px;
-    min-height: 44px;
-    display: inline-flex;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 4px 4px;
+    min-height: 50px;
+    font-size: 9px;
+    letter-spacing: .05em;
     white-space: nowrap;
+    border-radius: 12px;
+    transition: background .15s, color .15s;
   }
+  .nav__link:hover,
+  .nav__link:active { background: rgba(192,96,128,.08); }
 
-  .nav__sep { padding: 0 7px; }
+  .nav__link::after { display: none; }
+
+  .nav__icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .nav__label { display: block; }
+
+  .nav__link.is-active .nav__icon { stroke: #c06080; }
+  .nav__link.is-active .nav__label { color: #c06080; font-weight: 600; }
+  .nav__link--gift .nav__icon { stroke: #b8608a; }
 
   /* ── Hero: oculto en mobile ── */
   .hero--collage { display: none; }

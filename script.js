@@ -243,12 +243,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!header) return;
     document.documentElement.style.setProperty("--headerH", header.offsetHeight + "px");
   }
+
+  // ── Nav activo según sección visible ─────────────────
+  function updateActiveNav() {
+    if (!isMobile()) return;
+    const sections = [
+      { id: "inicio",   nav: "inicio"   },
+      { id: "catalogo", nav: "catalogo" },
+      { id: "contacto", nav: "contacto" },
+    ];
+    const scrollY = window.scrollY + window.innerHeight / 2;
+    let active = "inicio";
+    for (const s of sections) {
+      const el = document.getElementById(s.id);
+      if (el && el.offsetTop <= scrollY) active = s.nav;
+    }
+    document.querySelectorAll(".nav__link[data-nav]").forEach(a => {
+      a.classList.toggle("is-active", a.dataset.nav === active);
+    });
+  }
+
   function onScroll() {
     if (!header) return;
     header.classList.toggle("header--compact", window.scrollY > 10);
     setHeaderH();
+    updateActiveNav();
   }
   setHeaderH();
+  updateActiveNav();
   window.addEventListener("resize", setHeaderH);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
