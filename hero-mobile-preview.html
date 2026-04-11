@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hero mobile preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #e8dde2;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      gap: 20px;
+    }
+
+    label { font-size: 11px; color: #999; letter-spacing: .1em; text-transform: uppercase; }
+
+    .phone {
+      width: 300px;
+      height: 620px;
+      background: #fff7fa;
+      border-radius: 40px;
+      box-shadow: 0 28px 80px rgba(0,0,0,.22), 0 0 0 1px rgba(0,0,0,.07);
+      border: 8px solid #1a1a1a;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .fake-header {
+      background: #fff7fa;
+      padding: 14px 18px 10px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .fake-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      letter-spacing: 5px;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+    .fake-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 2px 0 4px;
+    }
+    .fake-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+    }
+    .fake-nav-icon {
+      width: 16px; height: 16px;
+      background: #ddd;
+      border-radius: 3px;
+    }
+    .fake-nav-text {
+      width: 28px; height: 5px;
+      background: #ddd;
+      border-radius: 3px;
+    }
+    .fake-nav-item.active .fake-nav-icon,
+    .fake-nav-item.active .fake-nav-text { background: #c06080; }
+
+    /* Hero section */
+    .hero-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 24px 32px;
+      background: linear-gradient(160deg, #fff7fa 0%, #f5e6ee 60%, #eedde6 100%);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Decoración de fondo */
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(192,96,128,.12) 0%, transparent 70%);
+      top: -60px; right: -80px;
+      pointer-events: none;
+    }
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(192,96,128,.08) 0%, transparent 70%);
+      bottom: 20px; left: -60px;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #c06080;
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 38px;
+      font-weight: 400;
+      line-height: 1.1;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+
+    .hero-sub {
+      font-size: 11px;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 200px;
+    }
+
+    .hero-btn {
+      background: #1a1a1a;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(26,26,26,.25);
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .hero-scroll-hint span {
+      font-size: 8px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+    .scroll-arrow {
+      width: 1px;
+      height: 18px;
+      background: linear-gradient(to bottom, #bbb, transparent);
+    }
+  </style>
+</head>
+<body>
+
+  <label>Cómo quedaría ↓</label>
+
+  <div class="phone">
+    <div class="fake-header">
+      <div class="fake-brand">AGUSTINA</div>
+      <div class="fake-nav">
+        <div class="fake-nav-item active"><div class="fake-nav-icon"></div><div class="fake-nav-text"></div></div>
+        <div class="fake-nav-item"><div class="fake-nav-icon"></div><div class="fake-nav-text"></div></div>
+        <div class="fake-nav-item"><div class="fake-nav-icon"></div><div class="fake-nav-text"></div></div>
+        <div class="fake-nav-item"><div class="fake-nav-icon"></div><div class="fake-nav-text"></div></div>
+      </div>
+    </div>
+
+    <div class="hero-section">
+      <p class="hero-eyebrow">Nueva colección · San Rafael</p>
+      <h1 class="hero-title">Moda &amp;<br>Accesorios</h1>
+      <p class="hero-sub">Bijou, carteras, ropa y detalles para levantar cualquier look</p>
+      <button class="hero-btn">Ver colección</button>
+
+      <div class="hero-scroll-hint">
+        <span>scroll</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
