@@ -358,7 +358,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           data-images="${encodeURIComponent(JSON.stringify(allImgs))}">
           <div class="card__media">
             ${isNew ? '<span class="card__badge">NUEVO</span>' : ""}
-            <img src="${allImgs[0] || ""}" class="card__img card__img--primary" alt="${p.name}">
+            <img src="${allImgs[0] || ""}" class="card__img card__img--primary" alt="${p.name}" loading="lazy">
             ${hasSecond ? `<img src="${allImgs[1]}" class="card__img card__img--secondary" alt="${p.name}" loading="lazy">` : ""}
             ${lines}
             <button class="card__add-btn"
