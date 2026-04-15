@@ -531,8 +531,7 @@
 </div>
 
 <script>
-  const SUPABASE_URL = "https://srqkahdyboqannrmkqmf.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNycWthaGR5Ym9xYW5ucm1rcW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MzE5NzYsImV4cCI6MjA5MTIwNzk3Nn0.AhedlrcW9bD_8JF2PvEvIaFsgJDF9ooCy9YdwULEMjk";
+  const API_URL = "https://api-agustina.juaniperez1243.workers.dev";
   const ADMIN_PWD = "1234";
 
   // ---- LOGIN ----
@@ -682,13 +681,9 @@
       const imageUrl = imageUrls[0];
       const images = imageUrls;
 
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/guardar-producto`, {
+      const res = await fetch(`${API_URL}/guardar-producto`, {
         method: "POST",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`,
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, price, image_url: imageUrl, images, cat, sub, precio_efectivo })
       });
 
@@ -712,9 +707,7 @@
     const list = document.getElementById("product-list");
     list.innerHTML = `<div class="loading">Cargando...</div>`;
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?order=created_at.desc`, {
-      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-    });
+    const res = await fetch(`${API_URL}/admin/productos`);
     allProducts = await res.json();
 
     // Resetear filtros
@@ -873,22 +866,15 @@
     if (status) status.textContent = "Eliminando...";
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}&select=images,image_url`, {
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-      });
-      const [prod] = await res.json();
+      const res = await fetch(`${API_URL}/producto?id=${id}`);
+      const prod = await res.json();
       let imgs = (prod.images && prod.images.length) ? [...prod.images] : (prod.image_url ? [prod.image_url] : []);
       imgs = imgs.filter(u => u !== url);
 
-      const patch = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+      const patch = await fetch(`${API_URL}/producto`, {
         method: "PATCH",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify({ images: imgs, image_url: imgs[0] || "" })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, images: imgs, image_url: imgs[0] || "" })
       });
 
       if (!patch.ok) throw new Error("Error al guardar");
@@ -941,15 +927,10 @@
     if (status) status.textContent = "";
 
     try {
-      const patch = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+      const patch = await fetch(`${API_URL}/producto`, {
         method: "PATCH",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify({ name, price, cat, sub, precio_efectivo })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, name, price, cat, sub, precio_efectivo })
       });
 
       if (!patch.ok) throw new Error("Error al guardar");
@@ -978,14 +959,10 @@
 
   // ---- TOGGLE ACTIVO ----
   async function toggleActivo(id, currentActivo) {
-    await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+    await fetch(`${API_URL}/producto`, {
       method: "PATCH",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ activo: !currentActivo })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, activo: !currentActivo })
     });
     // Actualizar cache y re-filtrar sin recargar todo
     const p = allProducts.find(x => x.id === id);
@@ -1012,12 +989,10 @@
   async function deleteProduct(id, name) {
     if (!confirm(`¿Segura que querés eliminar "${name}"?`)) return;
 
-    await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+    await fetch(`${API_URL}/producto`, {
       method: "DELETE",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
     });
     // Quitar del cache y del DOM
     allProducts = allProducts.filter(x => x.id !== id);
@@ -1104,26 +1079,19 @@
 
     try {
       // Obtener imágenes actuales del producto
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}&select=images,image_url`, {
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-      });
-      const [prod] = await res.json();
+      const res = await fetch(`${API_URL}/producto?id=${id}`);
+      const prod = await res.json();
       const existing = (prod.images && prod.images.length) ? prod.images : (prod.image_url ? [prod.image_url] : []);
 
       // Subir nuevas imágenes
       const newUrls = await Promise.all(files.map(f => uploadImage(f)));
       const allImages = [...existing, ...newUrls];
 
-      // Actualizar producto en Supabase
-      const patch = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=eq.${id}`, {
+      // Actualizar producto
+      const patch = await fetch(`${API_URL}/producto`, {
         method: "PATCH",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify({ images: allImages, image_url: allImages[0] })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, images: allImages, image_url: allImages[0] })
       });
 
       if (!patch.ok) throw new Error("Error al guardar");

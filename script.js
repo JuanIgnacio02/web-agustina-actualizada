@@ -1,14 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-  const SUPABASE_URL = "https://srqkahdyboqannrmkqmf.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNycWthaGR5Ym9xYW5ucm1rcW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MzE5NzYsImV4cCI6MjA5MTIwNzk3Nn0.AhedlrcW9bD_8JF2PvEvIaFsgJDF9ooCy9YdwULEMjk";
+  const API_URL = "https://api-agustina.juaniperez1243.workers.dev";
 
   // ── Fetch productos ─────────────────────────────────
   async function fetchProducts() {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/productos?activo=eq.true&order=created_at.desc&select=id,name,price,precio_efectivo,cat,sub,image_url,images`,
-      { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } }
-    );
+    const res = await fetch(`${API_URL}/productos`);
     if (!res.ok) return [];
     return await res.json();
   }
