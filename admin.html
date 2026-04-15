@@ -596,68 +596,70 @@
     document.getElementById("upload-zone").textContent = "✓ " + file.name;
   }
 
-  // ---- COMPRIMIR IMAGEN AUTOMÁTICAMENTE ----
-  async function compressImage(file, quality = 0.75, maxWidth = 1200) {
+  // ---- COMPRIMIR Y CONVERTIR A WEBP (canvas API) ----
+  // Funciona en cualquier dispositivo: PC, Android e iOS (Safari 14+).
+  // Máx 1200px de ancho, calidad 0.82 → reduce el peso ~60-80% respecto a un JPEG de cámara.
+  function compressToWebP(file, maxWidth = 1200, quality = 0.82) {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
       const img = new Image();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        img.src = event.target.result;
-      };
-      reader.onerror = () => reject(new Error("No se pudo leer la imagen"));
-      img.onerror = () => reject(new Error("No se pudo cargar la imagen"));
+      const url = URL.createObjectURL(file);
+
       img.onload = () => {
-        const scale = Math.min(maxWidth / img.width, 1);
+        URL.revokeObjectURL(url);
+
+        let w = img.naturalWidth;
+        let h = img.naturalHeight;
+        if (w > maxWidth) {
+          h = Math.round(h * maxWidth / w);
+          w = maxWidth;
+        }
+
         const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error("No se pudo comprimir la imagen"));
-              return;
-            }
-            const fileName = file.name.replace(/\.[^.]+$/, "") + ".webp";
-            const compressedFile = new File(
-              [blob],
-              fileName,
-              { type: "image/webp" }
-            );
-            resolve(compressedFile);
-          },
-          "image/webp",
-          quality
-        );
+        canvas.width  = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+
+        // Intentar WebP; si el browser no lo soporta (iOS < 14) caer a JPEG
+        canvas.toBlob(blob => {
+          if (blob) return resolve(blob);
+          canvas.toBlob(b => b ? resolve(b) : reject(new Error("No se pudo comprimir la imagen")),
+            "image/jpeg", quality);
+        }, "image/webp", quality);
       };
+
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("No se pudo leer la imagen")); };
+      img.src = url;
     });
   }
 
-  // ---- SUBIR IMAGEN A SUPABASE STORAGE ----
+  // ---- SUBIR IMAGEN A CLOUDFLARE R2 (vía Worker) ----
+  const WORKER_URL = "https://upload-productos.juaniperez1243.workers.dev";
+
   async function uploadImage(file) {
-    const compressedFile = await compressImage(file, 0.75, 1200);
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.webp`;
-
-    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/productos/${fileName}`, {
-      method: "POST",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "image/webp",
-        "x-upsert": "true",
-        "cache-control": "public, max-age=31536000"
-      },
-      body: compressedFile
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message || "Error subiendo imagen");
+    // Comprimir y convertir a WebP antes de subir
+    let blob;
+    try {
+      blob = await compressToWebP(file);
+    } catch {
+      blob = file; // Si falla la compresión, subir original
     }
 
-    return `${SUPABASE_URL}/storage/v1/object/public/productos/${fileName}`;
+    const isWebP   = blob.type === "image/webp";
+    const fileName = `${Date.now()}.${isWebP ? "webp" : "jpg"}`;
+
+    const form = new FormData();
+    form.append("file", blob, fileName);
+    form.append("name", fileName);
+
+    const res = await fetch(WORKER_URL, { method: "POST", body: form });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Error subiendo imagen a R2");
+    }
+
+    const { url } = await res.json();
+    return url;
   }
 
   // ---- GUARDAR PRODUCTO ----

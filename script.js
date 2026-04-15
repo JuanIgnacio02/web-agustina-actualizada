@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div class="card__media">
             ${isNew ? '<span class="card__badge">NUEVO</span>' : ""}
             <img src="${allImgs[0] || ""}" class="card__img card__img--primary" alt="${p.name}" loading="lazy">
-            ${hasSecond ? `<img src="${allImgs[1]}" class="card__img card__img--secondary" alt="${p.name}" loading="lazy">` : ""}
+            ${hasSecond ? `<img data-src="${allImgs[1]}" class="card__img card__img--secondary" alt="${p.name}">` : ""}
             ${lines}
             <button class="card__add-btn"
               data-cart-id="${p.id}"
@@ -388,32 +388,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     attachImageCycle();
   }
 
-  // ── Image cycling en hover (solo 3+ imágenes, CSS maneja el caso de 2) ──
+  // ── Image cycling en hover ──────────────────────────────────────────────
+  // La imagen secundaria usa data-src para no descargarse en el render inicial.
+  // Se carga desde Supabase únicamente cuando el usuario hace hover sobre la card.
   function attachImageCycle() {
     document.querySelectorAll(".product-link").forEach(card => {
-      const allImgs = JSON.parse(decodeURIComponent(card.dataset.images || "[]"));
-      if (allImgs.length < 3) return; // 2 imágenes: lo resuelve CSS con cross-fade
-
+      const allImgs   = JSON.parse(decodeURIComponent(card.dataset.images || "[]"));
       const secondary = card.querySelector(".card__img--secondary");
-      const lines     = card.querySelectorAll(".card__line");
+
+      if (allImgs.length < 2 || !secondary) return;
+
+      // ── 2 imágenes: CSS maneja el cross-fade; JS solo dispara la carga ──
+      if (allImgs.length === 2) {
+        card.addEventListener("mouseenter", function loadSec() {
+          if (!secondary.src) secondary.src = secondary.dataset.src || allImgs[1];
+          card.removeEventListener("mouseenter", loadSec); // una sola carga
+        });
+        return;
+      }
+
+      // ── 3+ imágenes: ciclo automático ───────────────────────────────────
+      const lines = card.querySelectorAll(".card__line");
       let timer = null;
-      let idx = 1; // arranca en la segunda (índice 1)
+      let idx = 1;
 
       function showImg(i) {
         idx = i;
-        if (secondary) {
-          secondary.style.opacity = "0";
-          setTimeout(() => {
-            secondary.src = allImgs[idx];
-            secondary.style.opacity = "1";
-          }, 100);
-        }
+        secondary.style.opacity = "0";
+        setTimeout(() => {
+          secondary.src = allImgs[idx];
+          secondary.style.opacity = "1";
+        }, 100);
         lines.forEach((l, j) => l.classList.toggle("is-active", j === idx));
       }
 
       card.addEventListener("mouseenter", () => {
         idx = 1;
-        if (secondary) secondary.src = allImgs[1];
+        secondary.src = allImgs[1];
         clearInterval(timer);
         timer = setInterval(() => showImg(idx + 1 >= allImgs.length ? 1 : idx + 1), 900);
       });
