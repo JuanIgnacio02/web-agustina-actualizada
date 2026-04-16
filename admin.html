@@ -616,9 +616,9 @@
         canvas.height = h;
         canvas.getContext("2d").drawImage(img, 0, 0, w, h);
 
-        // Intentar WebP; si el browser no lo soporta (iOS < 14) caer a JPEG
+        // Intentar WebP; si el browser no lo soporta o devuelve otro formato (iOS Safari) caer a JPEG
         canvas.toBlob(blob => {
-          if (blob) return resolve(blob);
+          if (blob && blob.type === "image/webp") return resolve(blob);
           canvas.toBlob(b => b ? resolve(b) : reject(new Error("No se pudo comprimir la imagen")),
             "image/jpeg", quality);
         }, "image/webp", quality);
