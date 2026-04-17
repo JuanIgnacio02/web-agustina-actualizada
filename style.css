@@ -1827,11 +1827,40 @@ body {
 
   .section__title { font-size: 20px; }
 
-  /* ── Header del catálogo (título + burger): oculto en mobile ── */
-  .catalogo__header { display: none; }
+  /* ── Header del catálogo en mobile ── */
+  .catalogo__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .catalogo__header .section__title {
+    font-size: 20px;
+    margin: 0;
+  }
 
-  /* ── Filtros desktop: ocultos en mobile ── */
-  .catalogo__chips { display: none !important; }
+  /* ── Filtros en mobile: scroll horizontal ── */
+  .catalogo__chips {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 4px;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  }
+  .catalogo__chips::-webkit-scrollbar { display: none; }
+
+  /* Sin dropdowns en mobile */
+  .chip-sub  { display: none !important; }
+  .chip-arrow { display: none; }
+
+  /* Chips más táctiles */
+  .chip { flex-shrink: 0; min-height: 40px; display: flex; align-items: center; }
 
   /* ── Botón "Filtros" ── */
   .filter-burger {
