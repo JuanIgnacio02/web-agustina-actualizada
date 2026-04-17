@@ -343,7 +343,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             `<span class="card__dot${i === 0 ? " is-active" : ""}"></span>`).join("")}</div>`
         : "";
 
-      const imgEncoded  = encodeURIComponent(allImgs[0] || "");
+      const imgEncoded  = encodeURIComponent(cloudinaryUrl(allImgs[0] || ""));
       const nameEncoded = encodeURIComponent(p.name);
       const hasSecond   = allImgs.length > 1;
 
