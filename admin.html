@@ -593,70 +593,27 @@
     document.getElementById("upload-zone").textContent = "✓ " + file.name;
   }
 
-  // ---- COMPRIMIR Y CONVERTIR A WEBP (canvas API) ----
-  // Funciona en cualquier dispositivo: PC, Android e iOS (Safari 14+).
-  // Máx 1200px de ancho, calidad 0.82 → reduce el peso ~60-80% respecto a un JPEG de cámara.
-  function compressToWebP(file, maxWidth = 1200, quality = 0.82) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-
-        let w = img.naturalWidth;
-        let h = img.naturalHeight;
-        if (w > maxWidth) {
-          h = Math.round(h * maxWidth / w);
-          w = maxWidth;
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width  = w;
-        canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-
-        // Intentar WebP; si el browser no lo soporta (iOS < 14) caer a JPEG
-        canvas.toBlob(blob => {
-          if (blob) return resolve(blob);
-          canvas.toBlob(b => b ? resolve(b) : reject(new Error("No se pudo comprimir la imagen")),
-            "image/jpeg", quality);
-        }, "image/webp", quality);
-      };
-
-      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("No se pudo leer la imagen")); };
-      img.src = url;
-    });
-  }
-
-  // ---- SUBIR IMAGEN A CLOUDFLARE R2 (vía Worker) ----
-  const WORKER_URL = "https://upload-productos.juaniperez1243.workers.dev";
+  // ---- SUBIR IMAGEN A CLOUDINARY ----
+  const CLOUDINARY_CLOUD  = "dk7nxmdcg";
+  const CLOUDINARY_PRESET = "productos";
 
   async function uploadImage(file) {
-    // Comprimir y convertir a WebP antes de subir
-    let blob;
-    try {
-      blob = await compressToWebP(file);
-    } catch {
-      blob = file; // Si falla la compresión, subir original
-    }
-
-    const isWebP   = blob.type === "image/webp";
-    const fileName = `${Date.now()}.${isWebP ? "webp" : "jpg"}`;
-
     const form = new FormData();
-    form.append("file", blob, fileName);
-    form.append("name", fileName);
+    form.append("file", file);
+    form.append("upload_preset", CLOUDINARY_PRESET);
 
-    const res = await fetch(WORKER_URL, { method: "POST", body: form });
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
+      { method: "POST", body: form }
+    );
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Error subiendo imagen a R2");
+      throw new Error(err.error?.message || "Error subiendo imagen a Cloudinary");
     }
 
-    const { url } = await res.json();
-    return url;
+    const data = await res.json();
+    return data.secure_url;
   }
 
   // ---- GUARDAR PRODUCTO ----
