@@ -1,5 +1,10 @@
 const API_URL = "https://api-agustina.juaniperez1243.workers.dev";
 
+function cloudinaryUrl(url, w = 1200) {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${w}/`);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
 
   const params = new URLSearchParams(window.location.search);
@@ -30,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Imagen
   const imgEl = document.getElementById("prdImage");
-  imgEl.src = image;
+  imgEl.src = cloudinaryUrl(image);
   imgEl.alt = name;
 
   // Nombre y precio
@@ -169,10 +174,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (images.length > 1) {
     images.forEach((url, i) => {
       const thumb = document.createElement("img");
-      thumb.src = url;
+      thumb.src = cloudinaryUrl(url, 300);
       thumb.className = "prd-thumb" + (i === 0 ? " active" : "");
       thumb.addEventListener("click", () => {
-        imgEl.src = url;
+        imgEl.src = cloudinaryUrl(url);
         thumbsEl.querySelectorAll(".prd-thumb").forEach(t => t.classList.remove("active"));
         thumb.classList.add("active");
       });

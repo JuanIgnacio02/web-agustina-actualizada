@@ -1,3 +1,8 @@
+function cloudinaryUrl(url, w = 800) {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${w}/`);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
 
   const API_URL = "https://api-agustina.juaniperez1243.workers.dev";
@@ -354,8 +359,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           data-images="${encodeURIComponent(JSON.stringify(allImgs))}">
           <div class="card__media">
             ${isNew ? '<span class="card__badge">NUEVO</span>' : ""}
-            <img src="${allImgs[0] || ""}" class="card__img card__img--primary" alt="${p.name}" loading="lazy">
-            ${hasSecond ? `<img data-src="${allImgs[1]}" class="card__img card__img--secondary" alt="${p.name}">` : ""}
+            <img src="${cloudinaryUrl(allImgs[0]) || ""}" class="card__img card__img--primary" alt="${p.name}" loading="lazy">
+            ${hasSecond ? `<img data-src="${cloudinaryUrl(allImgs[1])}" class="card__img card__img--secondary" alt="${p.name}">` : ""}
             ${lines}
             <button class="card__add-btn"
               data-cart-id="${p.id}"
