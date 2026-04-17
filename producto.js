@@ -1,5 +1,4 @@
-const SUPABASE_URL = "https://srqkahdyboqannrmkqmf.supabase.co";
-const SUPABASE_KEY = "sb_publishable_C25BY4_efIwhRHoBqzYvgQ_MqMGmrI7";
+const API_URL = "https://api-agustina.juaniperez1243.workers.dev";
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -10,12 +9,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let product;
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/productos?id=eq.${id}&limit=1`,
-      { headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } }
-    );
+    const res = await fetch(`${API_URL}/producto?id=${id}`);
     const data = await res.json();
-    product = data[0];
+    product = data;
   } catch (e) { showEmpty(); return; }
 
   if (!product) { showEmpty(); return; }
