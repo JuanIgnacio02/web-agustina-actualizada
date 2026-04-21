@@ -29,6 +29,81 @@ document.addEventListener("DOMContentLoaded", async () => {
   const mSheetClose      = document.getElementById("mSheetClose");
   const mSheetList       = document.getElementById("mSheetList");
 
+  // ── Drawer lateral mobile ────────────────────────────
+  const menuBurger       = document.getElementById("menuBurger");
+  const drawer           = document.getElementById("drawer");
+  const drawerBackdrop   = document.getElementById("drawerBackdrop");
+  const drawerClose      = document.getElementById("drawerClose");
+  const drawerSearchInput = document.getElementById("drawerSearchInput");
+
+  function openDrawer() {
+    drawer?.classList.add("is-open");
+    drawer?.removeAttribute("aria-hidden");
+    drawerBackdrop?.classList.add("is-open");
+    menuBurger?.classList.add("is-open");
+    menuBurger?.setAttribute("aria-expanded", "true");
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    setTimeout(() => drawerSearchInput?.focus(), 320);
+  }
+
+  function closeDrawer() {
+    drawer?.classList.remove("is-open");
+    drawer?.setAttribute("aria-hidden", "true");
+    drawerBackdrop?.classList.remove("is-open");
+    menuBurger?.classList.remove("is-open");
+    menuBurger?.setAttribute("aria-expanded", "false");
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }
+
+  menuBurger?.addEventListener("click", () => {
+    drawer?.classList.contains("is-open") ? closeDrawer() : openDrawer();
+  });
+  drawerClose?.addEventListener("click", closeDrawer);
+  drawerBackdrop?.addEventListener("click", closeDrawer);
+
+  drawer?.querySelectorAll(".drawer__link").forEach(link => {
+    link.addEventListener("click", () => setTimeout(closeDrawer, 120));
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && drawer?.classList.contains("is-open")) closeDrawer();
+  });
+
+  if (drawerSearchInput) {
+    drawerSearchInput.addEventListener("input", () => {
+      searchQuery = drawerSearchInput.value.trim().toLowerCase();
+      if (searchInput) searchInput.value = drawerSearchInput.value;
+      if (searchQuery) {
+        const catalogoEl = document.getElementById("catalogo");
+        if (catalogoEl) catalogoEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      renderProducts();
+    });
+  }
+
+  // Swipe left to close drawer
+  if (drawer) {
+    let swipeStartX = 0;
+    drawer.addEventListener("touchstart", e => { swipeStartX = e.touches[0].clientX; }, { passive: true });
+    drawer.addEventListener("touchend", e => {
+      if (swipeStartX - e.changedTouches[0].clientX > 60) closeDrawer();
+    }, { passive: true });
+  }
+
+  // ── Catálogo link en drawer: abre filtros ────────────
+  document.getElementById("drawerNavCatalogo")?.addEventListener("click", (e) => {
+    if (isMobile()) {
+      e.preventDefault();
+      closeDrawer();
+      setTimeout(() => {
+        scrollToCatalogo();
+        setTimeout(() => openSheet(), 300);
+      }, 200);
+    }
+  });
+
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   function isMobile() { return window.innerWidth <= 768; }

@@ -19,6 +19,11 @@
 <body>
   <header class="header">
     <div class="header__inner">
+      <button class="menu-burger" id="menuBurger" aria-label="Abrir menú" aria-expanded="false">
+        <span class="menu-burger__bar"></span>
+        <span class="menu-burger__bar"></span>
+        <span class="menu-burger__bar"></span>
+      </button>
       <a href="#inicio" class="brand__name brand__link">AGUSTINA</a>
       <div class="header__spacer"></div>
       <div class="header__search" id="headerSearch">
@@ -71,6 +76,59 @@
       </a>
     </nav>
   </header>
+
+  <!-- ── Menú lateral mobile ── -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__top">
+      <span class="drawer__brand">AGUSTINA</span>
+      <button class="drawer__close" id="drawerClose" aria-label="Cerrar menú">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="drawer__search-wrap">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="drawer__search-icon">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="drawerSearchInput" class="drawer__search-input" placeholder="Buscar productos..." autocomplete="off" />
+    </div>
+
+    <nav class="drawer__nav">
+      <a href="#inicio" class="drawer__link" data-nav="inicio" id="drawerNavInicio">
+        <svg class="drawer__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+          <path d="M9 21V12h6v9"/>
+        </svg>
+        Inicio
+      </a>
+      <a href="#catalogo" class="drawer__link" data-nav="catalogo" id="drawerNavCatalogo">
+        <svg class="drawer__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Catálogo
+      </a>
+      <a href="?cat=giftcards#catalogo" class="drawer__link drawer__link--gift" data-nav="gift">
+        <svg class="drawer__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="8" width="20" height="13" rx="2"/>
+          <path d="M12 8v13"/><path d="M2 12h20"/>
+          <path d="M8 8c0-2 1.5-4 4-4s4 2 4 4"/>
+        </svg>
+        Gift Cards
+      </a>
+      <a href="#contacto" class="drawer__link" data-nav="contacto">
+        <svg class="drawer__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+        Contacto
+      </a>
+    </nav>
+  </aside>
 
   <main class="main">
 
