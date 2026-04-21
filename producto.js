@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const image          = product.image_url      || "";
   const cat            = product.cat            || "";
   const sub            = product.sub            || "";
-  const description    = product.description    || "";
+  const description    = product.descripcion    || "";
   const images         = (product.images && product.images.length) ? product.images : [image].filter(Boolean);
 
   // Título pestaña
