@@ -477,6 +477,11 @@
           </div>
 
           <div class="form-group full">
+            <label>Descripción <span style="color:#aaa;font-weight:400">— opcional</span></label>
+            <textarea id="f-descripcion" placeholder="Ej: Taza de cerámica con diseño exclusivo, 350ml. Ideal para regalar." rows="3" style="resize:vertical;min-height:70px"></textarea>
+          </div>
+
+          <div class="form-group full">
             <label>Imágenes del producto * <span style="color:#aaa;font-weight:400">(primera = principal)</span></label>
             <input type="file" id="f-img-file" accept="image/*" multiple style="display:none" />
             <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-img-file').click()">
@@ -644,6 +649,7 @@
     const sub = document.getElementById("f-sub").value;
     const precioEfectivoRaw = document.getElementById("f-price-efectivo").value;
     const precio_efectivo = precioEfectivoRaw ? parseInt(precioEfectivoRaw) : null;
+    const descripcion = document.getElementById("f-descripcion").value.trim() || null;
     if (!name || !price || !cat || !selectedFiles.length) {
       showMsg("err", "Completá nombre, precio, categoría e imagen");
       return;
@@ -661,7 +667,7 @@
       const res = await fetch(`${API_URL}/guardar-producto`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, price, image_url: imageUrl, images, cat, sub, precio_efectivo })
+        body: JSON.stringify({ name, price, image_url: imageUrl, images, cat, sub, precio_efectivo, descripcion })
       });
 
       if (!res.ok) throw new Error((await res.json()).error || "Error al guardar");
@@ -790,6 +796,10 @@
               <label>Precio en efectivo (ARS) <span style="color:#aaa;font-weight:400">— opcional</span></label>
               <input type="number" id="edit-precio-efectivo-${p.id}" value="${p.precio_efectivo || ''}" placeholder="Ej: 8500" min="0" />
             </div>
+            <div class="form-group full">
+              <label>Descripción <span style="color:#aaa;font-weight:400">— opcional</span></label>
+              <textarea id="edit-descripcion-${p.id}" rows="3" placeholder="Descripción del producto..." style="resize:vertical;min-height:70px">${p.descripcion ? p.descripcion.replace(/</g,'&lt;') : ''}</textarea>
+            </div>
           </div>
           <div class="edit-panel__actions">
             <button class="btn btn--primary btn--sm" id="btn-save-edit-${p.id}" onclick="saveEdit(${p.id})">Guardar cambios</button>
@@ -892,6 +902,7 @@
     const sub   = document.getElementById(`edit-sub-${id}`).value;
     const peRaw = document.getElementById(`edit-precio-efectivo-${id}`).value;
     const precio_efectivo = peRaw ? parseInt(peRaw) : null;
+    const descripcion = document.getElementById(`edit-descripcion-${id}`).value.trim() || null;
     const status = document.getElementById(`edit-status-${id}`);
 
     if (!name || isNaN(price) || price < 0 || !cat) {
@@ -907,7 +918,7 @@
       const patch = await fetch(`${API_URL}/producto`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, name, price, cat, sub, precio_efectivo })
+        body: JSON.stringify({ id, name, price, cat, sub, precio_efectivo, descripcion })
       });
 
       if (!patch.ok) throw new Error("Error al guardar");
