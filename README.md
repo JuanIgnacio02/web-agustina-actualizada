@@ -1,33 +1,31 @@
+📊 Proyecto de Base de Datos Avanzada  
+Grupo 2  
+
+👥 Integrantes  
+Conforti, Angelo  
+Contreras, Facundo  
+Perez, Juan Ignacio  
+Romero, Tomas  
+Vergara, Juan Ignacio  
+
+📌 Descripción del Proyecto  
+Este repositorio contiene el desarrollo del proyecto correspondiente a la materia Base de Datos Avanzada, cuyo objetivo principal es aplicar de forma práctica los conceptos teóricos aprendidos durante el cursado.  
+
+El proyecto busca diseñar, implementar y gestionar una base de datos robusta, eficiente y escalable, incorporando herramientas y técnicas avanzadas del manejo de datos.  
+
+---
+
 🌸 Web Agustina
 
-Sitio web moderno y minimalista desarrollado para AGUSTINA, un emprendimiento de moda femenina que ofrece ropa, bijouterie y accesorios. Este proyecto funciona como catálogo online y portfolio profesional, diseñado para brindar una experiencia visual elegante y optimizada.
+Sitio web moderno y minimalista desarrollado para AGUSTINA, un emprendimiento de moda femenina. Funciona como catálogo online con panel de administración, integrado con Cloudflare R2 para almacenamiento de imágenes y Cloudflare Workers como backend.
 
-🔗 Demo en vivo:
-https://web-agustina.vercel.app/
+🔗 Demo en vivo: https://web-agustina.vercel.app/
 
-⸻
+✨ Características
+- Diseño responsive para móviles, tablets y computadoras
+- Catálogo de productos dinámico con filtros por categoría
+- Panel de administración para gestión de productos
+- Compresión y conversión de imágenes a WebP automática
+- Integración con Cloudflare R2 y Workers
 
-📌 Descripción del Proyecto
-
-Web Agustina es una página web responsive creada para exhibir productos de manera atractiva y eficiente. El objetivo es mejorar la presencia digital del emprendimiento y facilitar la visualización del catálogo por parte de los clientes.
-
-Este proyecto también forma parte del portfolio de desarrollo web, destacando habilidades en diseño, optimización y despliegue.
-
-⸻
-
-✨ Características Principales
-	•	🎨 Diseño minimalista y elegante.
-	•	📱 Totalmente responsive para móviles, tablets y computadoras.
-	•	⚡ Optimización de rendimiento mediante imágenes comprimidas en WebP.
-	•	🛍️ Catálogo de productos dinámico.
-	•	☁️ Integración con Supabase para almacenamiento de datos e imágenes.
-	•	🚀 Despliegue en Vercel para máxima velocidad y disponibilidad.
-	•	🔗 Enlaces directos a redes sociales y WhatsApp.
-	•	💖 Interfaz inspirada en estilos modernos y estética tipo Pinterest.
-
-👨‍💻 Autor
-
-Juan Ignacio Pérez
-🎓 Estudiante de Ingeniería en Sistemas de Información
-💼 Desarrollador Web
-	•	GitHub: https://github.com/JuanIgnacio02
+👨‍💻 Desarrollador: Juan Ignacio Pérez
