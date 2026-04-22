@@ -517,7 +517,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (chips) {
     chips.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-filter]");
-      if (!btn || isMobile()) return;
+      if (!btn) return;
       const label = btn.textContent.trim().replace("▾", "").trim();
       applyFilter(btn.dataset.filter, btn.dataset.value, label);
     });
