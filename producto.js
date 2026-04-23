@@ -168,21 +168,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Galería thumbnails
+  // ── Galería: thumbnails (desktop) + dots + swipe (mobile) ──────────────
   const thumbsEl = document.getElementById("prdThumbs");
+  const dotsEl   = document.getElementById("prdDots");
 
   if (images.length > 1) {
+    let currentIdx = 0;
+
+    function goToImage(idx) {
+      currentIdx = idx;
+      imgEl.style.opacity = "0";
+      setTimeout(() => {
+        imgEl.src = cloudinaryUrl(images[idx]);
+        imgEl.style.opacity = "1";
+      }, 180);
+      thumbsEl.querySelectorAll(".prd-thumb").forEach((t, i) => t.classList.toggle("active", i === idx));
+      dotsEl.querySelectorAll(".prd-dot").forEach((d, i)   => d.classList.toggle("active", i === idx));
+    }
+
+    // Thumbnails
     images.forEach((url, i) => {
       const thumb = document.createElement("img");
       thumb.src = cloudinaryUrl(url, 300);
       thumb.className = "prd-thumb" + (i === 0 ? " active" : "");
-      thumb.addEventListener("click", () => {
-        imgEl.src = cloudinaryUrl(url);
-        thumbsEl.querySelectorAll(".prd-thumb").forEach(t => t.classList.remove("active"));
-        thumb.classList.add("active");
-      });
+      thumb.addEventListener("click", () => goToImage(i));
       thumbsEl.appendChild(thumb);
     });
+
+    // Dots
+    images.forEach((_, i) => {
+      const dot = document.createElement("span");
+      dot.className = "prd-dot" + (i === 0 ? " active" : "");
+      dot.addEventListener("click", () => goToImage(i));
+      dotsEl.appendChild(dot);
+    });
+
+    // Swipe táctil
+    const wrap = imgEl.closest(".prd-imgwrap");
+    let tx = 0, ty = 0;
+    wrap.addEventListener("touchstart", e => {
+      tx = e.touches[0].clientX;
+      ty = e.touches[0].clientY;
+    }, { passive: true });
+    wrap.addEventListener("touchend", e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      const dy = e.changedTouches[0].clientY - ty;
+      if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
+      goToImage(dx < 0
+        ? (currentIdx < images.length - 1 ? currentIdx + 1 : 0)
+        : (currentIdx > 0 ? currentIdx - 1 : images.length - 1)
+      );
+    }, { passive: true });
   }
 
   // Error imagen

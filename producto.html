@@ -70,7 +70,7 @@
       height: 520px;
       object-fit: cover;
       display: block;
-      transition: transform .35s ease;
+      transition: transform .35s ease, opacity .2s ease;
     }
     .prd-imgwrap:hover #prdImage { transform: scale(1.03); }
 
@@ -301,6 +301,9 @@
       padding: 60px 20px;
     }
 
+    /* dots mobile */
+    .prd-dots { display: none; }
+
     /* responsive */
     @media (max-width: 860px) {
       .prd-layout { grid-template-columns: 1fr; gap: 24px; }
@@ -309,6 +312,29 @@
       .prd-title { font-size: 32px; }
       .prd-topbar { flex-direction: column; align-items: flex-start; }
       .prd-wrap { padding-top: calc(var(--headerH, 80px) + 20px); }
+
+      /* en mobile: ocultar thumbs, mostrar dots */
+      .prd-thumbs { display: none; }
+      .prd-dots {
+        display: flex;
+        justify-content: center;
+        gap: 7px;
+        padding: 12px 0 2px;
+      }
+      .prd-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(192,96,128,.25);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background .25s ease, width .3s ease, border-radius .3s ease;
+      }
+      .prd-dot.active {
+        background: #c06080;
+        width: 22px;
+        border-radius: 4px;
+      }
     }
 
     /* ── Productos recomendados ──────────────────────── */
@@ -393,6 +419,7 @@
             <img id="prdImage" alt="" loading="eager" />
           </div>
           <div class="prd-thumbs" id="prdThumbs"></div>
+          <div class="prd-dots" id="prdDots"></div>
         </div>
 
         <!-- Info -->
