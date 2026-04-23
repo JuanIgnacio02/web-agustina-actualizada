@@ -388,6 +388,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function renderProducts(filter = { type: "all", value: "all" }) {
     let list = products;
+    // Gift cards no aparecen en "Todo", solo en su categoría propia
+    if (filter.type === "all") list = products.filter(p => p.cat !== "giftcards");
     if (filter.type === "cat") list = products.filter(p => p.cat === filter.value);
     if (filter.type === "sub") list = products.filter(p => p.sub === filter.value);
 
@@ -405,6 +407,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     grid.innerHTML = list.map(p => {
       // Todas las imágenes del producto (usa array 'images' de Supabase)
       const allImgs = (p.images && p.images.length) ? p.images : [p.image_url].filter(Boolean);
+
+      // ── Card especial para Gift Cards ──
+      if (p.cat === "giftcards") {
+        const imgSrc = cloudinaryUrl(allImgs[0]) || "";
+        return `
+          <article class="card card--gift product-link"
+            data-id="${p.id}"
+            data-images="${encodeURIComponent(JSON.stringify(allImgs))}">
+            <div class="card__media">
+              <span class="card__badge">🎁 Gift Card</span>
+              ${imgSrc ? `<img src="${imgSrc}" class="card__img card__img--primary" alt="${p.name}" loading="lazy">` : ""}
+              <div class="card--gift__shine"></div>
+            </div>
+            <div class="card__info">
+              <span class="card__cat">para regalar</span>
+              <h3 class="card__title">${p.name}</h3>
+              <p class="card--gift__cta">Elegí el monto →</p>
+            </div>
+          </article>`;
+      }
 
       const isNew = p.created_at
         ? (Date.now() - new Date(p.created_at).getTime()) < 14 * 24 * 60 * 60 * 1000

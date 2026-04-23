@@ -2584,6 +2584,35 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,.15);
 }
 
+/* ── Gift Card card especial ─────────────────────────────── */
+.card--gift .card__media {
+  background: linear-gradient(135deg, #FAE8EE 0%, #F2C4D0 55%, #EDE0D4 100%);
+}
+.card--gift .card__badge {
+  background: linear-gradient(135deg, #C97A90, #E8A0B4);
+  color: white;
+}
+.card--gift__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,.22) 0%,
+    transparent 50%,
+    rgba(255,255,255,.08) 100%);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity .25s;
+}
+.card--gift:hover .card--gift__shine { opacity: 0; }
+.card--gift__cta {
+  font-family: 'Jost', Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #C97A90;
+  letter-spacing: .03em;
+  margin-top: 2px;
+}
+
 /* ── Botón "Agregar" en las cards — overlay sobre imagen ── */
 .card__add-btn {
   position: absolute;
