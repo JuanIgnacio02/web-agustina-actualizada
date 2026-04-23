@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacto • AGUSTINA</title>
+  <meta name="theme-color" content="#FDF6F0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+
+    body.page-contact {
+      background: #FDF6F0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Blobs de fondo ───────────────────────────────── */
+    .cp-blob {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+    }
+    .cp-blob--a {
+      width: 520px; height: 580px;
+      top: -8%; right: -6%;
+      background: radial-gradient(ellipse at 40% 40%, #F2C4D0 0%, transparent 68%);
+      opacity: .5;
+    }
+    .cp-blob--b {
+      width: 380px; height: 380px;
+      bottom: -6%; left: -4%;
+      background: radial-gradient(ellipse at 60% 60%, #EDE0D4 0%, transparent 70%);
+      opacity: .55;
+    }
+    .cp-blob--c {
+      width: 260px; height: 300px;
+      top: 40%; left: 12%;
+      background: radial-gradient(ellipse at 50% 50%, #FAE8EE 0%, transparent 70%);
+      opacity: .35;
+    }
+
+    /* ── Main ─────────────────────────────────────────── */
+    .cp-main {
+      position: relative;
+      z-index: 1;
+      min-height: calc(100vh - 56px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--headerH, 110px) + 48px) 24px 72px;
+    }
+
+    .cp-inner {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ── Tipografía ───────────────────────────────────── */
+    .cp-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: #C97A90;
+      margin: 0 0 22px;
+      opacity: 0;
+    }
+
+    .cp-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(56px, 10vw, 96px);
+      font-weight: 300;
+      font-style: italic;
+      line-height: .95;
+      color: #3B2630;
+      margin: 0 0 28px;
+      opacity: 0;
+    }
+
+    .cp-divider {
+      width: 44px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #C97A90, transparent);
+      margin: 0 auto 34px;
+      opacity: 0;
+    }
+
+    .cp-sub {
+      font-family: 'Jost', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      color: #7A5A62;
+      line-height: 1.7;
+      margin: 0 0 48px;
+      opacity: 0;
+    }
+
+    /* ── WhatsApp ─────────────────────────────────────── */
+    .cp-wa {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #25D366;
+      color: white;
+      text-decoration: none;
+      font-family: 'Jost', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 18px 40px;
+      border-radius: 999px;
+      box-shadow: 0 8px 28px rgba(37,211,102,.22);
+      transition: background .2s, box-shadow .2s, transform .2s;
+      margin-bottom: 44px;
+      opacity: 0;
+    }
+    .cp-wa:hover {
+      background: #1eb85a;
+      box-shadow: 0 16px 44px rgba(37,211,102,.32);
+      transform: translateY(-3px);
+      color: white;
+    }
+
+    /* ── Cards de info ────────────────────────────────── */
+    .cp-cards {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cp-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 14px;
+      backdrop-filter: blur(12px);
+      text-decoration: none;
+      color: #3B2630;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      transition: background .2s, transform .2s, box-shadow .2s;
+      opacity: 0;
+    }
+    .cp-card:hover {
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(0,0,0,.08);
+      color: #3B2630;
+    }
+    .cp-card__icon { font-size: 17px; flex-shrink: 0; }
+
+    /* ── Footer ───────────────────────────────────────── */
+    .cp-footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 18px 24px 26px;
+      font-family: 'Jost', sans-serif;
+      font-size: 11.5px;
+      color: #c0a8b0;
+      letter-spacing: .04em;
+    }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 580px) {
+      .cp-main { padding-top: calc(var(--headerH, 80px) + 32px); }
+      .cp-cards { flex-direction: column; align-items: stretch; }
+      .cp-card  { justify-content: center; }
+      .cp-wa    { width: 100%; justify-content: center; padding: 16px 28px; }
+    }
+  </style>
+</head>
+<body class="page-contact">
+
+  <header class="header">
+    <div class="header__inner">
+      <a href="index.html" class="brand__name brand__link">AGUSTINA</a>
+      <div class="header__spacer"></div>
+    </div>
+    <nav class="nav nav--bottom">
+      <a href="index.html#inicio" class="nav__link">Inicio</a>
+      <span class="nav__sep">·</span>
+      <a href="index.html#catalogo" class="nav__link">Catálogo</a>
+      <span class="nav__sep">·</span>
+      <a href="index.html?cat=giftcards#catalogo" class="nav__link nav__link--gift">🎁 Gift Cards</a>
+      <span class="nav__sep">·</span>
+      <a href="contacto.html" class="nav__link" style="color:#3B2630;font-weight:500;">Contacto</a>
+    </nav>
+  </header>
+
+  <!-- Blobs decorativos -->
+  <div class="cp-blob cp-blob--a" aria-hidden="true"></div>
+  <div class="cp-blob cp-blob--b" aria-hidden="true"></div>
+  <div class="cp-blob cp-blob--c" aria-hidden="true"></div>
+
+  <main class="cp-main">
+    <div class="cp-inner">
+
+      <p class="cp-eyebrow">Contacto</p>
+
+      <h1 class="cp-title">Hablemos.</h1>
+
+      <div class="cp-divider"></div>
+
+      <p class="cp-sub">
+        Consultas, pedidos y envíos a todo el país.<br>
+        San Rafael, Mendoza — respondemos rápido 🌸
+      </p>
+
+      <a class="cp-wa"
+        href="https://wa.me/5492604009647?text=Hola%20Agustina!%20Vi%20el%20cat%C3%A1logo%20y%20me%20gustar%C3%ADa%20consultar%20%F0%9F%8C%B8"
+        target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 00-8.7 15l-1.1 4 4-1A10 10 0 1012 2zm0 18a8 8 0 01-4-1l-.3-.2-2.4.6.6-2.3-.2-.3A8 8 0 1112 20zm4.3-6.1c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.9 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.1-.3 0-.5-.1-.1-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.4-.2.3-1 1-1 2.3 0 1.3 1 2.6 1.1 2.8.1.2 1.9 2.9 4.6 4.1 2.7 1.2 2.7.8 3.2.8.5 0 1.6-.7 1.8-1.3.2-.6.2-1.1.2-1.2 0-.1-.2-.2-.4-.3z"/>
+        </svg>
+        Escribir por WhatsApp
+      </a>
+
+      <div class="cp-cards">
+        <a class="cp-card"
+          href="https://www.instagram.com/agustina.sanrafael/"
+          target="_blank" rel="noopener noreferrer">
+          <span class="cp-card__icon">📸</span>
+          <span>@agustina.sanrafael</span>
+        </a>
+        <a class="cp-card"
+          href="https://www.google.com/maps/search/?api=1&query=San+Rafael+Mendoza"
+          target="_blank" rel="noopener noreferrer">
+          <span class="cp-card__icon">📍</span>
+          <span>San Rafael, Mendoza</span>
+        </a>
+        <div class="cp-card">
+          <span class="cp-card__icon">🚚</span>
+          <span>Envíos a todo el país</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="cp-footer">
+    © <span id="year"></span> AGUSTINA · Todos los derechos reservados
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    function updateHeaderH() {
+      const h = document.querySelector(".header");
+      if (h) document.documentElement.style.setProperty("--headerH", h.offsetHeight + "px");
+    }
+    document.addEventListener("DOMContentLoaded", updateHeaderH);
+    window.addEventListener("resize", updateHeaderH);
+  </script>
+  <script src="cart.js" defer></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('.cp-eyebrow,.cp-title,.cp-divider,.cp-sub,.cp-wa,.cp-card')
+          .forEach(el => el.style.opacity = 1);
+        return;
+      }
+
+      // Blobs flotantes
+      gsap.to(".cp-blob--a", { y: -28, x: 12, duration: 7, repeat: -1, yoyo: true, ease: "sine.inOut" });
+      gsap.to(".cp-blob--b", { y: 22, x: -10, duration: 9, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 1 });
+      gsap.to(".cp-blob--c", { y: -16, x: 8,  duration: 11, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2 });
+
+      // Entrada en cascada
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.to(".cp-eyebrow",  { opacity: 1, y: 0, duration: 0.6 }, 0.2)
+        .fromTo(".cp-eyebrow", { y: 14 }, { y: 0, duration: 0.6 }, 0.2)
+
+        .fromTo(".cp-title",
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 1 }, 0.3)
+
+        .fromTo(".cp-divider",
+          { opacity: 0, scaleX: 0 },
+          { opacity: 1, scaleX: 1, duration: 0.65, transformOrigin: "center" }, 0.7)
+
+        .fromTo(".cp-sub",
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 0.7 }, 0.85)
+
+        .fromTo(".cp-wa",
+          { opacity: 0, y: 22, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.65 }, 1.05)
+
+        .fromTo(".cp-card",
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }, 1.2);
+    })();
+  </script>
+</body>
+</html>
