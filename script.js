@@ -484,6 +484,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     observeCards();
     attachImageCycle();
+
+    // Tira promo gift cards — solo mobile, solo en vista "Todo"
+    const existingPromo = grid.querySelector(".gc-promo");
+    if (existingPromo) existingPromo.remove();
+    if (filter.type === "all" && window.innerWidth <= 768) {
+      const gcProducts = products.filter(p => p.cat === "giftcards");
+      if (gcProducts.length > 0) {
+        const promo = document.createElement("div");
+        promo.className = "gc-promo";
+        promo.innerHTML = `
+          <div class="gc-promo__text">
+            <span class="gc-promo__icon">🎁</span>
+            <span>¿Buscás regalar algo especial?</span>
+          </div>
+          <button class="gc-promo__btn">Ver Gift Cards</button>`;
+        promo.querySelector(".gc-promo__btn").addEventListener("click", () => {
+          const chip = document.querySelector('[data-filter="cat"][data-value="giftcards"]');
+          if (chip) chip.click();
+        });
+        grid.appendChild(promo);
+      }
+    }
   }
 
   // ── Image cycling en hover ──────────────────────────────────────────────
