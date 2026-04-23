@@ -345,6 +345,29 @@
           .from('.hero-mobile__sub',     { opacity: 0, y: 14, duration: 0.6 }, '-=0.35')
           .from('.hero-mobile__btn',     { opacity: 0, y: 12, scale: 0.96, duration: 0.55 }, '-=0.25');
       }
+
+      // ── Catálogo: título + chips ──────────────────────
+      gsap.from('#section-title', {
+        opacity: 0, y: 20, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: '#catalogo', start: 'top 82%' }
+      });
+
+      if (!mobile) {
+        gsap.from('#catalogoChips .chip, #catalogoChips .chip-group', {
+          opacity: 0, y: 14, duration: 0.5, ease: 'power3.out', stagger: 0.055,
+          scrollTrigger: { trigger: '#catalogoChips', start: 'top 88%' }
+        });
+      }
+
+      // ── Contacto ─────────────────────────────────────
+      gsap.from(
+        ['.contact__eyebrow', '.contact__title', '.contact__sub', '.contact__wa', '.contact__socials'],
+        {
+          opacity: 0, y: 24, duration: 0.65, ease: 'power3.out', stagger: 0.13,
+          scrollTrigger: { trigger: '.contact', start: 'top 78%' }
+        }
+      );
+
     })();
   </script>
 </body>
