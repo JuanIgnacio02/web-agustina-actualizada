@@ -270,6 +270,15 @@ function buildRecCard(p) {
 }
 
 function attachRecBehavior(grid) {
+  // Scroll reveal: las cards arrancan con opacity 0, necesitan clase is-visible
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("is-visible"); observer.unobserve(e.target); }
+    }),
+    { threshold: 0.12 }
+  );
+  grid.querySelectorAll(".card").forEach(c => observer.observe(c));
+
   // Navegación y carrito
   grid.addEventListener("click", e => {
     const addBtn = e.target.closest(".card__add-btn");
