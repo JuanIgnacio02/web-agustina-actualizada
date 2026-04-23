@@ -190,6 +190,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     imgEl.closest(".prd-imgwrap").style.minHeight = "200px";
   });
 
+  // ── Productos recomendados ──────────────────────────────────────────────
+  loadRecommended(id, cat);
+
   function showEmpty() {
     document.getElementById("prdEmpty").hidden  = false;
     document.getElementById("prdLayout").hidden = true;
@@ -200,3 +203,129 @@ document.addEventListener("DOMContentLoaded", async () => {
     return str.replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
   }
 });
+
+async function loadRecommended(currentId, cat) {
+  try {
+    const res = await fetch(`${API_URL}/productos`);
+    const all = await res.json();
+
+    const shuffle = arr => arr.sort(() => Math.random() - .5);
+    const sameCat = shuffle(all.filter(p => String(p.id) !== String(currentId) && p.cat === cat));
+    const other   = shuffle(all.filter(p => String(p.id) !== String(currentId) && p.cat !== cat));
+    const pool    = [...sameCat, ...other].slice(0, 6);
+
+    if (pool.length === 0) return;
+
+    const recGrid    = document.getElementById("recGrid");
+    const recSection = document.getElementById("recSection");
+    recGrid.innerHTML = pool.map(buildRecCard).join("");
+    recSection.hidden = false;
+
+    attachRecBehavior(recGrid);
+  } catch (e) { /* falla silenciosa */ }
+}
+
+function buildRecCard(p) {
+  const allImgs   = (p.images && p.images.length) ? p.images : [p.image_url].filter(Boolean);
+  const isNew     = p.created_at
+    ? (Date.now() - new Date(p.created_at).getTime()) < 14 * 24 * 60 * 60 * 1000
+    : false;
+  const catLabel  = (p.cat || "").replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
+  const hasSecond = allImgs.length > 1;
+  const lines     = allImgs.length >= 3
+    ? `<div class="card__lines">${allImgs.map((_, i) =>
+        `<span class="card__line${i === 0 ? " is-active" : ""}"></span>`).join("")}</div>`
+    : "";
+  const nameEncoded = encodeURIComponent(p.name);
+  const imgEncoded  = encodeURIComponent(cloudinaryUrl(allImgs[0] || "", 600));
+
+  return `
+    <article class="card product-link"
+      data-id="${p.id}"
+      data-images="${encodeURIComponent(JSON.stringify(allImgs))}">
+      <div class="card__media">
+        ${isNew ? '<span class="card__badge">NUEVO</span>' : ""}
+        <img src="${cloudinaryUrl(allImgs[0], 600)}" class="card__img card__img--primary" alt="${p.name}" loading="lazy">
+        ${hasSecond ? `<img data-src="${cloudinaryUrl(allImgs[1], 600)}" class="card__img card__img--secondary" alt="${p.name}">` : ""}
+        ${lines}
+        <button class="card__add-btn"
+          data-cart-id="${p.id}"
+          data-cart-name="${nameEncoded}"
+          data-cart-price="${p.price}"
+          data-cart-efectivo="${p.precio_efectivo || 0}"
+          data-cart-image="${imgEncoded}"
+          data-cart-cat="${p.cat || ""}"
+          aria-label="Agregar al carrito">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+        </button>
+      </div>
+      <div class="card__info">
+        ${catLabel ? `<span class="card__cat">${catLabel}</span>` : ""}
+        <h3 class="card__title">${p.name}</h3>
+        <p class="card__price">$${p.price.toLocaleString("es-AR")}</p>
+      </div>
+    </article>`;
+}
+
+function attachRecBehavior(grid) {
+  // Navegación y carrito
+  grid.addEventListener("click", e => {
+    const addBtn = e.target.closest(".card__add-btn");
+    if (addBtn) {
+      e.stopPropagation();
+      if (typeof cartAdd === "function") {
+        cartAdd({
+          id:              String(addBtn.dataset.cartId),
+          name:            decodeURIComponent(addBtn.dataset.cartName),
+          price:           Number(addBtn.dataset.cartPrice),
+          precio_efectivo: Number(addBtn.dataset.cartEfectivo || 0),
+          image:           decodeURIComponent(addBtn.dataset.cartImage),
+          cat:             addBtn.dataset.cartCat,
+        });
+        const orig = addBtn.innerHTML;
+        addBtn.innerHTML = `<svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 10 8 14 16 6"/></svg>`;
+        setTimeout(() => { addBtn.innerHTML = orig; }, 1500);
+      }
+      return;
+    }
+    const card = e.target.closest(".product-link");
+    if (card) window.location.href = `producto.html?id=${card.dataset.id}`;
+  });
+
+  // Ciclo de imágenes en hover
+  grid.querySelectorAll(".product-link").forEach(card => {
+    const allImgs   = JSON.parse(decodeURIComponent(card.dataset.images || "[]"));
+    const secondary = card.querySelector(".card__img--secondary");
+    if (allImgs.length < 2 || !secondary) return;
+
+    if (allImgs.length === 2) {
+      card.addEventListener("mouseenter", function loadSec() {
+        if (!secondary.src) secondary.src = secondary.dataset.src || cloudinaryUrl(allImgs[1], 600);
+        card.removeEventListener("mouseenter", loadSec);
+      });
+      return;
+    }
+
+    const lines = card.querySelectorAll(".card__line");
+    let timer = null, idx = 1;
+    function showImg(i) {
+      idx = i;
+      secondary.style.opacity = "0";
+      setTimeout(() => { secondary.src = cloudinaryUrl(allImgs[idx], 600); secondary.style.opacity = "1"; }, 100);
+      lines.forEach((l, j) => l.classList.toggle("is-active", j === idx));
+    }
+    card.addEventListener("mouseenter", () => {
+      idx = 1; secondary.src = cloudinaryUrl(allImgs[1], 600);
+      clearInterval(timer);
+      timer = setInterval(() => showImg(idx + 1 >= allImgs.length ? 1 : idx + 1), 900);
+    });
+    card.addEventListener("mouseleave", () => {
+      clearInterval(timer); timer = null;
+      lines.forEach((l, j) => l.classList.toggle("is-active", j === 0));
+    });
+  });
+}
