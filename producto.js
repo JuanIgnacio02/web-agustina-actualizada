@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let gcSelectedAmount = 0;
 
   if (isGiftCard) {
+    imgEl.closest(".prd-imgwrap").classList.add("prd-imgwrap--gc");
     // Mostrar bloque y ocultar precio fijo
     document.getElementById("gcAmount").hidden = false;
     document.getElementById("prdPrice").style.display = "none";

@@ -74,6 +74,13 @@
     }
     .prd-imgwrap:hover #prdImage { transform: scale(1.03); }
 
+    /* Gift card: imagen sin altura fija, ocupa todo el ancho */
+    .prd-imgwrap--gc #prdImage {
+      height: auto;
+      max-height: 540px;
+      object-fit: contain;
+    }
+
     /* galería thumbnails */
     .prd-thumbs {
       display: flex;
