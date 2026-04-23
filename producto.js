@@ -339,7 +339,8 @@ function attachRecBehavior(grid) {
     if (card) window.location.href = `producto.html?id=${card.dataset.id}`;
   });
 
-  // Ciclo de imágenes en hover
+  // Ciclo de imágenes en hover (solo dispositivos con mouse real)
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   grid.querySelectorAll(".product-link").forEach(card => {
     const allImgs   = JSON.parse(decodeURIComponent(card.dataset.images || "[]"));
     const secondary = card.querySelector(".card__img--secondary");

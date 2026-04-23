@@ -468,6 +468,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // La imagen secundaria usa data-src para no descargarse en el render inicial.
   // Se carga desde Supabase únicamente cuando el usuario hace hover sobre la card.
   function attachImageCycle() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     document.querySelectorAll(".product-link").forEach(card => {
       const allImgs   = JSON.parse(decodeURIComponent(card.dataset.images || "[]"));
       const secondary = card.querySelector(".card__img--secondary");
