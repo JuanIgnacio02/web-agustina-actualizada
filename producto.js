@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("prdPrice").textContent = "$" + price.toLocaleString("es-AR");
 
   // Precio efectivo (opcional)
-  if (precioEfectivo > 0) {
+  if (precioEfectivo > 0 && cat !== "giftcards") {
     document.getElementById("prdPriceEfectivo").style.display = "block";
     document.getElementById("prdPriceEfectivoVal").textContent = "$" + precioEfectivo.toLocaleString("es-AR");
   }
