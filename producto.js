@@ -210,9 +210,7 @@ async function loadRecommended(currentId, cat) {
     const all = await res.json();
 
     const shuffle = arr => arr.sort(() => Math.random() - .5);
-    const sameCat = shuffle(all.filter(p => String(p.id) !== String(currentId) && p.cat === cat));
-    const other   = shuffle(all.filter(p => String(p.id) !== String(currentId) && p.cat !== cat));
-    const pool    = [...sameCat, ...other].slice(0, 6);
+    const pool    = shuffle(all.filter(p => String(p.id) !== String(currentId) && p.cat === cat)).slice(0, 6);
 
     if (pool.length === 0) return;
 
