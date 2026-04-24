@@ -2656,6 +2656,112 @@ body {
 }
 .gc-promo__btn:hover { background: #C97A90; color: white; }
 
+/* ══════════════════════════════════════════════════════════
+   CÓMO COMPRAR
+══════════════════════════════════════════════════════════ */
+.como-comprar {
+  padding: 56px 20px 52px;
+  background: linear-gradient(180deg, rgba(242,196,208,.10) 0%, transparent 100%);
+  border-top: 1px solid rgba(0,0,0,.05);
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.como-comprar__inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.como-comprar__eyebrow {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #C97A90;
+  margin: 0 0 32px;
+}
+.como-comprar__steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+.como-comprar__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 160px;
+  max-width: 240px;
+  padding: 0 16px;
+}
+.como-comprar__num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 48px;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(201,122,144,.25);
+  line-height: 1;
+}
+.como-comprar__step-body { display: flex; flex-direction: column; gap: 6px; }
+.como-comprar__title {
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3B2630;
+  margin: 0;
+}
+.como-comprar__desc {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: #7A5A62;
+  line-height: 1.5;
+  margin: 0;
+}
+.como-comprar__divider {
+  color: rgba(201,122,144,.35);
+  flex-shrink: 0;
+  padding: 0 4px;
+  margin-bottom: 20px; /* alinea con el contenido */
+}
+.como-comprar__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  background: #3B2630;
+  text-decoration: none;
+  padding: 13px 30px;
+  border-radius: 999px;
+  transition: background .2s, transform .2s, box-shadow .2s;
+}
+.como-comprar__cta:hover {
+  background: #C97A90;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(201,122,144,.28);
+  color: white;
+}
+@media (max-width: 640px) {
+  .como-comprar { padding: 40px 16px 36px; }
+  .como-comprar__steps { flex-direction: column; gap: 20px; }
+  .como-comprar__step { max-width: 100%; padding: 0; }
+  .como-comprar__divider { transform: rotate(90deg); margin: 0; }
+  .como-comprar__num { font-size: 36px; }
+}
+
+/* ── Badges sistema: NEW / TOP / ÚLTIMAS ─────────────────── */
+.card__badge--new  { background: #3B2630; }
+.card__badge--top  { background: linear-gradient(135deg, #C97A90, #E8A0B4); }
+.card__badge--last {
+  background: linear-gradient(135deg, #c8783a, #e8a870);
+}
+
 /* ── Gift Card card especial ─────────────────────────────── */
 .card--gift .card__media {
   background: linear-gradient(135deg, #FAE8EE 0%, #F2C4D0 55%, #EDE0D4 100%);

@@ -137,7 +137,7 @@
       <p class="hero-mobile__eyebrow">Nueva colección · San Rafael</p>
       <h1 class="hero-mobile__title">Moda &amp;<br>Accesorios</h1>
       <p class="hero-mobile__sub">Bijou, carteras, ropa y detalles para levantar cualquier look</p>
-      <a href="#catalogo" class="hero-mobile__btn">Ver colección</a>
+      <a href="#catalogo" class="hero-mobile__btn">Ver lo nuevo</a>
       <div class="hero-mobile__trust">
         <span class="hero-mobile__trust-item">
           <svg viewBox="0 0 20 20" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="1" y="6" width="18" height="11" rx="2"/><path d="M1 9h18M6 6V4a4 4 0 018 0v2"/></svg>
@@ -174,7 +174,7 @@
           </p>
 
           <div class="hero__actions">
-            <a class="btn btn--primary" href="#catalogo">Ver productos</a>
+            <a class="btn btn--primary" href="#catalogo">Elegir productos</a>
 
             <a class="btn btn--ghost btn--icon"
               href="https://www.instagram.com/agustina.sanrafael/"
@@ -215,6 +215,49 @@
             <img class="collage__img collage__img--bottom" src="assets/hero3.jpeg" alt="" loading="lazy">
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- CÓMO COMPRAR -->
+    <section class="como-comprar" id="como-comprar" aria-label="Cómo comprar">
+      <div class="como-comprar__inner">
+        <p class="como-comprar__eyebrow">Simple y sin complicaciones</p>
+        <div class="como-comprar__steps">
+
+          <div class="como-comprar__step">
+            <span class="como-comprar__num">01</span>
+            <div class="como-comprar__step-body">
+              <h3 class="como-comprar__title">Elegís lo que te gusta</h3>
+              <p class="como-comprar__desc">Navegá el catálogo y sumá tus favoritos al carrito.</p>
+            </div>
+          </div>
+
+          <div class="como-comprar__divider" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13,6 19,12 13,18"/></svg>
+          </div>
+
+          <div class="como-comprar__step">
+            <span class="como-comprar__num">02</span>
+            <div class="como-comprar__step-body">
+              <h3 class="como-comprar__title">Armás tu carrito</h3>
+              <p class="como-comprar__desc">Revisá tu selección y el total cuando quieras.</p>
+            </div>
+          </div>
+
+          <div class="como-comprar__divider" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13,6 19,12 13,18"/></svg>
+          </div>
+
+          <div class="como-comprar__step">
+            <span class="como-comprar__num">03</span>
+            <div class="como-comprar__step-body">
+              <h3 class="como-comprar__title">Confirmás por WhatsApp</h3>
+              <p class="como-comprar__desc">Te enviamos el pedido directo a Agustina. ¡Listo!</p>
+            </div>
+          </div>
+
+        </div>
+        <a class="como-comprar__cta" href="#catalogo">Empezar a comprar</a>
       </div>
     </section>
 
@@ -370,6 +413,25 @@
           .from('.hero-mobile__sub',     { opacity: 0, y: 14, duration: 0.6 }, '-=0.35')
           .from('.hero-mobile__btn',     { opacity: 0, y: 12, scale: 0.96, duration: 0.55 }, '-=0.25');
       }
+
+      // ── Cómo comprar: steps con stagger ─────────────
+      gsap.from('.como-comprar__eyebrow', {
+        opacity: 0, y: 16, duration: 0.6, ease: 'power3.out',
+        scrollTrigger: { trigger: '.como-comprar', start: 'top 82%' }
+      });
+      gsap.from('.como-comprar__step', {
+        opacity: 0, y: 28, duration: 0.65, ease: 'power3.out', stagger: 0.15,
+        scrollTrigger: { trigger: '.como-comprar__steps', start: 'top 85%' }
+      });
+      gsap.from('.como-comprar__divider', {
+        opacity: 0, scaleX: 0, duration: 0.4, ease: 'power2.out', stagger: 0.15,
+        transformOrigin: 'left center',
+        scrollTrigger: { trigger: '.como-comprar__steps', start: 'top 85%' }
+      });
+      gsap.from('.como-comprar__cta', {
+        opacity: 0, y: 14, scale: 0.97, duration: 0.55, ease: 'power3.out',
+        scrollTrigger: { trigger: '.como-comprar__cta', start: 'top 90%' }
+      });
 
       // ── Catálogo: título + chips ──────────────────────
       gsap.from('#section-title', {

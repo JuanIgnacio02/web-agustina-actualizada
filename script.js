@@ -428,9 +428,15 @@ document.addEventListener("DOMContentLoaded", async () => {
           </article>`;
       }
 
-      const isNew = p.created_at
+      const isNew     = p.created_at
         ? (Date.now() - new Date(p.created_at).getTime()) < 14 * 24 * 60 * 60 * 1000
         : false;
+      const isTop     = !isNew && !!(p.featured || p.destacado);
+      const isUltimas = !isNew && !isTop && (p.stock_bajo === true || (typeof p.stock === 'number' && p.stock > 0 && p.stock <= 3));
+      const badge     = isNew     ? '<span class="card__badge card__badge--new">NUEVO</span>'
+                      : isTop     ? '<span class="card__badge card__badge--top">TOP</span>'
+                      : isUltimas ? '<span class="card__badge card__badge--last">ÚLTIMAS</span>'
+                      : '';
 
       const catLabel = (p.cat || "").replace(/-/g, " ").replace(/\b\w/g, m => m.toUpperCase());
 
@@ -455,7 +461,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           data-id="${p.id}"
           data-images="${encodeURIComponent(JSON.stringify(allImgs))}">
           <div class="card__media">
-            ${isNew ? '<span class="card__badge">NUEVO</span>' : ""}
+            ${badge}
             <img src="${cloudinaryUrl(allImgs[0]) || ""}" class="card__img card__img--primary" alt="${p.name}" loading="lazy">
             ${hasSecond ? `<img data-src="${cloudinaryUrl(allImgs[1])}" class="card__img card__img--secondary" alt="${p.name}">` : ""}
             ${lines}
