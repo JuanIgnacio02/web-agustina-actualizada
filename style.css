@@ -1922,13 +1922,13 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    height: calc(100dvh - var(--headerH, 80px));
-    min-height: 480px;
-    padding: 40px 28px 60px;
+    min-height: 400px;
+    height: clamp(400px, calc(82dvh - var(--headerH, 80px)), 560px);
+    padding: 26px 22px 42px;
     background: linear-gradient(160deg, #FDF6F0 0%, #FAE8EE 55%, #EDE0D4 100%);
     position: relative;
     overflow: hidden;
-    margin: 0 -14px 40px;
+    margin: 0 -14px 18px;
   }
 
   .hero-mobile::before {
@@ -1973,7 +1973,7 @@ body {
     font-size: 13px;
     color: #888;
     line-height: 1.65;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
     max-width: 260px;
   }
 
@@ -1999,7 +1999,7 @@ body {
 
   .hero-mobile__scroll {
     position: absolute;
-    bottom: 20px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -2020,7 +2020,7 @@ body {
     padding-right: 14px;
   }
 
-  .section { padding-top: 16px; }
+  .section { padding-top: 8px; }
 
   .section__title { font-size: 20px; }
 
