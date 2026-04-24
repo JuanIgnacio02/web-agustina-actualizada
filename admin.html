@@ -1055,7 +1055,8 @@
   async function saveNewImages(id) {
     const files = pendingImgFiles[id];
     if (!files || !files.length) {
-      alert("Seleccioná al menos una foto para agregar.");
+      const s = document.getElementById(`img-status-${id}`);
+      if (s) { s.textContent = "⚠️ Seleccioná al menos una foto para agregar."; s.style.color = "#c06080"; }
       return;
     }
 
