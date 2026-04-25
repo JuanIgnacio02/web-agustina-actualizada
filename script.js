@@ -42,8 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     drawerBackdrop?.classList.add("is-open");
     menuBurger?.classList.add("is-open");
     menuBurger?.setAttribute("aria-expanded", "true");
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
+    document.body.classList.add("drawer-open");
     setTimeout(() => drawerSearchInput?.focus(), 320);
   }
 
@@ -53,8 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     drawerBackdrop?.classList.remove("is-open");
     menuBurger?.classList.remove("is-open");
     menuBurger?.setAttribute("aria-expanded", "false");
-    document.documentElement.style.overflow = "";
-    document.body.style.overflow = "";
+    document.body.classList.remove("drawer-open");
   }
 
   menuBurger?.addEventListener("click", () => {
